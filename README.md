@@ -1,5 +1,3 @@
-# GAME_JAM_1
-
 ## Struktura projektu w Unity
 ### Hierarchia folderów
 Poniżej jest przedstawiona hierarchia folderów stosuj się do niej organizując, tworząc i importując assety do Unity.
