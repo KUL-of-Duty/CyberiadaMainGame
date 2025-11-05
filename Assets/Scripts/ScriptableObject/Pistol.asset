@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 019dfcd8888a38444948db24fbccc79c, type: 3}
+  m_Name: Pistol
+  m_EditorClassIdentifier: 
+  name: cokolwiek
+  model: {fileID: 5353147940080190247, guid: 98090009237e00a4894aae07cd288f5c, type: 3}
+  ammo: 12
