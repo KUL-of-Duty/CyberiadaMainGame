@@ -7,8 +7,6 @@ public class ItemPickup : MonoBehaviour
     {
         _borrowedItem = other.gameObject.GetComponent<ItemSpawnerScript>().itemContainer;
 
-        MusicManager.instance.PlaySound();
-
         Destroy(other.gameObject);
     }
 }
