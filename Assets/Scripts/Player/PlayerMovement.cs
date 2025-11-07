@@ -48,6 +48,9 @@ public class PlayerMovement : NetworkBehaviour
 
     [Header("Server use variables")]
 
+    [Header("Generate terrain")]
+    [SerializeField] GameObject terrain;
+
     public Vector3 MoveVector { get; private set; }
     public Vector3 RotateVector { get; private set; }
 
@@ -57,15 +60,17 @@ public class PlayerMovement : NetworkBehaviour
         _playerCamera = GetComponentInChildren<CinemachineCamera>();
         _playerCamera.gameObject.SetActive(false);
 
-        Cursor.lockState = CursorLockMode.Locked;
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
-        if (IsOwner) _playerCamera.gameObject.SetActive(true);
-
+        if (IsOwner) 
+        {
+            _playerCamera.gameObject.SetActive(true);
+        }
     }
 
     void Update()
