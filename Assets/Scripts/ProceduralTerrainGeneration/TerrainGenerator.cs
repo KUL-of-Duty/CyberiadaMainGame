@@ -1,10 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class TerrainGenerator : NetworkBehaviour
 { 
@@ -90,33 +86,6 @@ public class TerrainGenerator : NetworkBehaviour
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
 
-    //private void SpawnTree()    
-    //{
-    //    for (int x = 0; x < width; x += width/100)
-    //    {
-    //        for (int y = 0; y < height; y += height/100)
-    //        {
-    //            int chance = Random.Range(0, 100);
-    //            if (chance == 1)
-    //            {
-    //                float heigth = terrain.SampleHeight(new Vector3(x - 128, 0, y - 128));
-    //                Vector3 position = new Vector3(x - 128, heigth - 15, y - 128);
-    //                treeLocations.Add(position);
-    //                Instantiate(tree, position, Quaternion.identity, transform);
-    //            }
-    //        }
-    //    }
-    //}
-
-    //private void SyncTree()
-    //{
-    //    for(int x = 0; x < treeX.Count; x++)
-    //    {
-    //        Vector3 position = new Vector3(treeX[x], treeY[x], treeZ[x]);
-    //        Instantiate(tree, position, Quaternion.identity, transform);
-    //    }
-    //}
-
     [ServerRpc]
     public void WorldGeneratedServerRPC(bool value)
     {
@@ -128,12 +97,4 @@ public class TerrainGenerator : NetworkBehaviour
     {
         ServerSeed.Value = seed;
     }
-
-    //[ServerRpc]
-    //public void SendTreeDataServerRPC(float x, float y, float z)
-    //{
-    //    treeX.Add(x);
-    //    treeY.Add(y);
-    //    treeZ.Add(z);
-    //}
 }
