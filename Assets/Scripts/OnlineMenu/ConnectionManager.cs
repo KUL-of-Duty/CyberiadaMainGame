@@ -1,0 +1,42 @@
+using System;
+using TMPro;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ConnectionManager : MonoBehaviour
+{
+    GameObject netManager;
+    UnityTransport unityTransport;
+    NetworkManager networkManager;
+
+    [SerializeField] TMP_InputField ifipAddress;
+    [SerializeField] TMP_InputField ifPort;
+
+    [SerializeField] GameObject lobby;
+
+    private void Awake()
+    {
+        netManager = FindFirstObjectByType<NetworkManager>().gameObject;
+        unityTransport = netManager.GetComponent<UnityTransport>();
+        networkManager = netManager.GetComponent<NetworkManager>();
+    }
+    public void JoinLobby()
+    {
+        unityTransport.SetConnectionData(ifipAddress.text, Convert.ToUInt16(ifPort.text));
+        networkManager.StartClient();
+        ShowLobby();
+    }
+    public void HostLobby()
+    {
+        networkManager.StartHost();
+        ShowLobby();
+    }
+
+    public void ShowLobby()
+    {
+        lobby.SetActive(true);
+        gameObject.SetActive(false);
+    }
+}

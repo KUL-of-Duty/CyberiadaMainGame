@@ -1,8 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
-public class TerrainGenerator : NetworkBehaviour
+public class TerrainGenerator : MonoBehaviour
 { 
     [SerializeField] GameObject tree;
     [Header("Terrain size options")]
@@ -11,6 +11,8 @@ public class TerrainGenerator : NetworkBehaviour
     [SerializeField] int height = 512;
     [SerializeField] int width = 512;
 
+    [SerializeField] float yOffSet = 10;
+
     [Space]
 
     [Header("Seed options")]
@@ -18,39 +20,19 @@ public class TerrainGenerator : NetworkBehaviour
     [SerializeField] int scale = 20;
     Terrain terrain;
 
-    [Space]
-
-    [Header("Synchronization")]
-    NetworkVariable<bool> IsWorldGenerated = new NetworkVariable<bool>(false);
-    NetworkVariable<int> ServerSeed = new NetworkVariable<int>();
-
     private void Awake()
     {
         terrain = GetComponent<Terrain>();
     }
 
-    private void Update()
+    public IEnumerator InitalizeTerrainGenerator()
     {
-        if(IsWorldGenerated.Value)
-        {
-            seed = ServerSeed.Value;
-            terrain.terrainData = GenerateTerrain(terrain.terrainData);
-            this.enabled = false;
-        }
-    }
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
+        seed = gameObject.GetComponent<SeedGenerator>().ServerSeed.Value;
+        terrain.terrainData = GenerateTerrain(terrain.terrainData);
 
-        if (IsServer)
-        {
-            seed = Random.Range(0, 99999);
-            ServerSeed.Value = seed;
-            terrain.terrainData = GenerateTerrain(terrain.terrainData);
-            IsWorldGenerated.Value = true;
-        }
+        yield return new WaitForSeconds(1f);
     }
-
+    
     private TerrainData GenerateTerrain(TerrainData terrainData)
     {
         terrainData.heightmapResolution = width + 1;
@@ -78,23 +60,37 @@ public class TerrainGenerator : NetworkBehaviour
         return heights;
     }
 
+    public IEnumerator GenerateTrees()
+    {
+        List<Vector2> treeLocations = GetComponent<PoissonDiscSampling>().points;
+
+        foreach (Vector2 location in treeLocations)
+        {
+            Vector3 samplePos = new Vector3(
+                location.x + terrain.transform.position.x,
+                0,
+                location.y + terrain.transform.position.z
+            );
+
+            float worldHeight = terrain.SampleHeight(samplePos);
+
+            Vector3 treeLocation = new Vector3(
+                samplePos.x,
+                worldHeight + yOffSet,
+                samplePos.z
+            );
+
+            Instantiate(tree, treeLocation, Quaternion.identity);
+        }
+
+        yield return new WaitForSeconds(1f);
+    }
+
     private float CalculateHeight(int x, int y) 
     {
         float xCoord = (float)x / width * scale + seed;
         float yCoord = (float)y / height * scale + seed;
 
         return Mathf.PerlinNoise(xCoord, yCoord);
-    }
-
-    [ServerRpc]
-    public void WorldGeneratedServerRPC(bool value)
-    {
-        IsWorldGenerated.Value = value;
-    }
-
-    [ServerRpc]
-    public void SendSeedServerRPC(int seed)
-    {
-        ServerSeed.Value = seed;
     }
 }
