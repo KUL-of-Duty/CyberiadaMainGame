@@ -90,7 +90,6 @@ public class Player : MonoBehaviour
     {
         RotateCamera();
         HandleCrouching();
-        
         HandleStamina();
 
         if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching) 
@@ -183,7 +182,7 @@ public class Player : MonoBehaviour
 
         float moveHorizontal = Input.GetAxisRaw("Horizontal");
         float moveForward = Input.GetAxisRaw("Vertical");
-
+        //sprawdzic normalized
         Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
         
         Vector3 targetVelocity = new Vector3(
