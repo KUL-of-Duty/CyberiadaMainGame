@@ -132,9 +132,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f6f56d31770e74590d3bc6ac853b28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
   tree: {fileID: 310075688840674183, guid: b6bb1925d57aacd48aeff514742ded4f, type: 3}
   depth: 20
-  height: 256
-  width: 256
-  scale: 5
+  height: 512
+  width: 512
+  yOffSet: 10
+  seedX: 0
+  seedY: 0
+  scale: 100

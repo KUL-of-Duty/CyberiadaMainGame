@@ -46,11 +46,6 @@ public class PlayerMovement : NetworkBehaviour
     private float _jumpForce = 15f;
     private float _jumpVelocity = 0f;
 
-    [Header("Server use variables")]
-
-    [Header("Generate terrain")]
-    [SerializeField] GameObject terrain;
-
     public Vector3 MoveVector { get; private set; }
     public Vector3 RotateVector { get; private set; }
 
@@ -60,17 +55,14 @@ public class PlayerMovement : NetworkBehaviour
         _playerCamera = GetComponentInChildren<CinemachineCamera>();
         _playerCamera.gameObject.SetActive(false);
 
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
-        if (IsOwner) 
-        {
-            _playerCamera.gameObject.SetActive(true);
-        }
+        if (IsOwner) _playerCamera.gameObject.SetActive(true);
     }
 
     void Update()
@@ -108,9 +100,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Gravity()
     {
-        if (_isGrounded && _velocity.y < 0) {
-            _velocity.y = -2f;
-        }
+        if (_isGrounded && _velocity.y < 0) _velocity.y = -2f;
         if (!_isGrounded)
         {
             _velocity.y += _gravityForce * Time.deltaTime;
@@ -120,11 +110,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded )
-        {
-
-            _jumpVelocity = Mathf.Sqrt(_jumpForce * -2f * _gravityForce); ;
-        }
+        if (Input.GetKeyDown(KeyCode.Space) && _isGrounded) _jumpVelocity = Mathf.Sqrt(_jumpForce * -2f * _gravityForce);
         if(_jumpVelocity > 0)
         {
             _jumpVelocity += _gravityForce * Time.deltaTime;

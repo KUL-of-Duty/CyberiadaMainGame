@@ -3,9 +3,10 @@ using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class ConnectionManager : MonoBehaviour
+public class ConnectionManager : NetworkBehaviour
 {
     GameObject netManager;
     UnityTransport unityTransport;
@@ -28,6 +29,7 @@ public class ConnectionManager : MonoBehaviour
         networkManager.StartClient();
         ShowLobby();
     }
+
     public void HostLobby()
     {
         networkManager.StartHost();
@@ -36,7 +38,6 @@ public class ConnectionManager : MonoBehaviour
 
     public void ShowLobby()
     {
-        lobby.SetActive(true);
-        gameObject.SetActive(false);
+        netManager.GetComponent<NetworkManager>().SceneManager.LoadScene("HeliLobby", LoadSceneMode.Single);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
@@ -7,30 +8,33 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField] GameObject tree;
     [Header("Terrain size options")]
 
-    [SerializeField] int depth = 20;
-    [SerializeField] int height = 512;
-    [SerializeField] int width = 512;
+    [SerializeField] int depth;
+    [SerializeField] int height;
+    [SerializeField] int width;
+    [SerializeField] float yOffSet;
+    int xChunkOffset;
+    int yChunkOffset;
 
-    [SerializeField] float yOffSet = 10;
 
     [Space]
 
     [Header("Seed options")]
     [SerializeField] int seed;
-    [SerializeField] int scale = 20;
+    [SerializeField] int scale;
     Terrain terrain;
 
     private void Awake()
     {
+
         terrain = GetComponent<Terrain>();
     }
 
-    public IEnumerator InitalizeTerrainGenerator()
+    public void InitalizeTerrainGenerator(int generatedSeed, int i, int j)
     {
-        seed = gameObject.GetComponent<SeedGenerator>().ServerSeed.Value;
+        seed = generatedSeed;
+        xChunkOffset = i * width;
+        yChunkOffset = j * height;
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
-
-        yield return new WaitForSeconds(1f);
     }
     
     private TerrainData GenerateTerrain(TerrainData terrainData)
@@ -88,9 +92,10 @@ public class TerrainGenerator : MonoBehaviour
 
     private float CalculateHeight(int x, int y) 
     {
-        float xCoord = (float)x / width * scale + seed;
-        float yCoord = (float)y / height * scale + seed;
-
+        float worldX = (x + seed + xChunkOffset); 
+        float worldY = (y + seed + yChunkOffset); 
+        float xCoord = (worldX) / scale;
+        float yCoord = (worldY) / scale;
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
 }

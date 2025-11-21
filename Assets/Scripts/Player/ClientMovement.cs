@@ -12,7 +12,6 @@ public class ClientMovement : NetworkBehaviour
     private void Awake()
     {
         _playerMovement.enabled = false;
-        _characterController.enabled = false;
     }
 
     public override void OnNetworkSpawn()
@@ -48,5 +47,15 @@ public class ClientMovement : NetworkBehaviour
     public void UpdateGravitationServerRPC(Vector3 gravitationalPull)
     {
         _characterController.Move(gravitationalPull);
+    }
+
+    [ServerRpc]
+    public void TeleportPlayerServerRPC(Vector3 location)
+    {
+        _characterController.enabled = false;
+
+        transform.position = location;
+
+        _characterController.enabled = true;
     }
 }

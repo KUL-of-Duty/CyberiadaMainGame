@@ -164,13 +164,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c8e7a06e99ee945b552a9ba7edf562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
   radius: 15
   objectToGenerate: {fileID: 310075688840674183, guid: b6bb1925d57aacd48aeff514742ded4f, type: 3}
   seed: 10000
   width: 256
   height: 256
-  activePoints: []
+  points: []
 --- !u!114 &544488300
 MonoBehaviour:
   m_ObjectHideFlags: 0
