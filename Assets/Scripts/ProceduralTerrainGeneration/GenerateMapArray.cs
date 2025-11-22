@@ -4,8 +4,8 @@ using UnityEngine;
 public class GenerateMapArray : NetworkBehaviour
 {
     [SerializeField] GameLevel mapTerrain;
-    [SerializeField] int mapGridWidth;
-    [SerializeField] int mapGridHeight;
+    public int mapGridWidth;
+    public int mapGridHeight;
     [SerializeField] int chunkBorder;
     int _seed;
     System.Random _rng;
@@ -31,7 +31,7 @@ public class GenerateMapArray : NetworkBehaviour
                 {
                     //_chunkSeed[i, j] = (int)_rng.NextDouble();
                     Terrain terrain = Instantiate(mapTerrain.terrain);
-                    terrain.gameObject.GetComponent<TerrainGenerator>().InitalizeTerrainGenerator(_seed, i, j);
+                    terrain.gameObject.GetComponent<TerrainGenerator>().InitalizeTerrainGenerator(_seed, i, j, mapGridWidth, mapGridHeight);
                     terrain.transform.position = GetLocation(i, j, mapGridHeight);
                 }   
         }

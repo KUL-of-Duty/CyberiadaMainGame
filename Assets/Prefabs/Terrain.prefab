@@ -137,6 +137,8 @@ MonoBehaviour:
   height: 512
   width: 512
   yOffSet: 10
-  seedX: 0
-  seedY: 0
+  seed: 0
   scale: 100
+  octaves: 5
+  lucunarity: 1.5
+  persistance: 0.5

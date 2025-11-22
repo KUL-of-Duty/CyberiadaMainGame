@@ -21,6 +21,9 @@ public class TerrainGenerator : MonoBehaviour
     [Header("Seed options")]
     [SerializeField] int seed;
     [SerializeField] int scale;
+    [SerializeField] int octaves;
+    [SerializeField] float lucunarity;
+    [SerializeField] float persistance;
     Terrain terrain;
 
     private void Awake()
@@ -29,11 +32,15 @@ public class TerrainGenerator : MonoBehaviour
         terrain = GetComponent<Terrain>();
     }
 
-    public void InitalizeTerrainGenerator(int generatedSeed, int i, int j)
+    public void InitalizeTerrainGenerator(int generatedSeed, int i, int j, int mapWitdth, int mapHeight)
     {
         seed = generatedSeed;
-        xChunkOffset = i * width;
-        yChunkOffset = j * height;
+        xChunkOffset = i;
+        yChunkOffset = j;
+
+        width = mapWitdth;
+        height = mapHeight;
+        
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
     }
     
@@ -42,26 +49,9 @@ public class TerrainGenerator : MonoBehaviour
         terrainData.heightmapResolution = width + 1;
 
         terrainData.size = new Vector3(width, depth, height);
-
-        terrainData.SetHeights(0, 0, GenerateHeights());
+        terrainData.SetHeights(0, 0, PerlinNoise.GenerateMap(width, height, scale, seed, octaves, lucunarity, persistance));
 
         return terrainData;
-    }
-
-    private float[,] GenerateHeights()
-    {
-        float[,] heights = new float[width, height];
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                float heightValue = CalculateHeight(x, y);
-
-                heights[x, y] = heightValue;
-            }
-        }
-        return heights;
     }
 
     public IEnumerator GenerateTrees()
@@ -88,14 +78,5 @@ public class TerrainGenerator : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f);
-    }
-
-    private float CalculateHeight(int x, int y) 
-    {
-        float worldX = (x + seed + xChunkOffset); 
-        float worldY = (y + seed + yChunkOffset); 
-        float xCoord = (worldX) / scale;
-        float yCoord = (worldY) / scale;
-        return Mathf.PerlinNoise(xCoord, yCoord);
     }
 }
