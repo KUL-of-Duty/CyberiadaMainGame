@@ -18,8 +18,8 @@ public class Player : MonoBehaviour
     public float CrouchSpeedPenalty = 3f;
     private float currentMoveSpeed;
 
-    private float emptyHandSpeedBonus = 2f; // Dodatkowy stały bonus do prędkości w trybie "Pusta Ręka"
-    private bool isRunningEmptyHand = false; // Flaga stanu
+    private float emptyHandSpeedBonus = 2f; 
+    private bool isRunningEmptyHand = false;
   
     [Header("Ustawienia Kucania")]
     [SerializeField, Tooltip("Obniżenie kamery w dół o tę wartość podczas kucania.")]
@@ -177,26 +177,22 @@ public class Player : MonoBehaviour
     {
         currentMoveSpeed = WalkSpeed;
 
-        // 1. Sprint
         bool isSprinting = Input.GetKey(KeyCode.LeftShift) && !isCrouching && canSprint;
         if (isSprinting) 
         {
             currentMoveSpeed += SprintBonus;
         }
 
-        // 2. Kucanie
         if (isCrouching)
         {
             currentMoveSpeed = Mathf.Max(0f, currentMoveSpeed - CrouchSpeedPenalty);
         }
         
-        // 3. BONUS PUSTEJ RĘKI (dodatkowy bonus, gdy nie sprintuje, kuca, i ma pustą rękę)
+        // Bonus Pustej Ręki
         if (isRunningEmptyHand && !isSprinting) 
         {
             currentMoveSpeed += emptyHandSpeedBonus;
         }
-        // NOTE: Jeśli chcesz, aby bonus Pustej Ręki stackował się ze sprintem,
-        // usuń warunek `&& !isSprinting` w powyższym 'if'.
 
         float moveHorizontal = Input.GetAxisRaw("Horizontal");
         float moveForward = Input.GetAxisRaw("Vertical");
@@ -211,7 +207,6 @@ public class Player : MonoBehaviour
 
         rb.linearVelocity = targetVelocity;
     }
-
     void RotateCamera()
     {
         if (cameraTransform == null) return;
@@ -248,4 +243,5 @@ public class Player : MonoBehaviour
             rb.linearVelocity += Vector3.up * Physics.gravity.y * (ascendMultiplier - 1) * Time.fixedDeltaTime;
         }
     }
+    
 }

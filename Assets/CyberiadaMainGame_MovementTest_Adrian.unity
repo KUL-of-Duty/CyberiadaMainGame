@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 47233122}
   - component: {fileID: 47233121}
   - component: {fileID: 47233120}
+  - component: {fileID: 47233125}
   m_Layer: 0
   m_Name: Dodatkowy item na pickup (3)
   m_TagString: PickupItem
@@ -255,6 +256,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &47233125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 47233119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 1
 --- !u!1 &85246745
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,6 +281,7 @@ GameObject:
   - component: {fileID: 85246748}
   - component: {fileID: 85246747}
   - component: {fileID: 85246746}
+  - component: {fileID: 85246750}
   m_Layer: 0
   m_Name: AK47
   m_TagString: PickupItem
@@ -363,6 +378,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 100184095}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &85246750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85246745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 1
 --- !u!1 &100184094
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,13 +416,13 @@ Transform:
   m_GameObject: {fileID: 100184094}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 193, y: 35.890003, z: 0}
+  m_LocalPosition: {x: 193, y: 37.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1494095414}
   - {fileID: 85246749}
-  m_Father: {fileID: 1536288001}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &169669595
 GameObject:
@@ -484,6 +512,7 @@ GameObject:
   - component: {fileID: 240417842}
   - component: {fileID: 240417841}
   - component: {fileID: 240417840}
+  - component: {fileID: 240417845}
   m_Layer: 0
   m_Name: Dodatkowy item na pickup (4)
   m_TagString: PickupItem
@@ -607,6 +636,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &240417845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 240417839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 3
 --- !u!1 &365152861
 GameObject:
   m_ObjectHideFlags: 0
@@ -914,11 +956,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemSlots:
-  - {fileID: 1494095413}
-  - {fileID: 85246745}
   - {fileID: 0}
   - {fileID: 0}
-  selectedSlotIndex: 0
+  - {fileID: 0}
+  - {fileID: 0}
+  selectedItemType: 4
+  itemHoldPoint: {fileID: 1223643925}
 --- !u!114 &479010801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1157,6 +1200,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1223643924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1223643925}
+  m_Layer: 0
+  m_Name: ItemHoldPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1223643925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223643924}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.5, y: -0.4, z: 0.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1536288001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1286221909
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,6 +1319,7 @@ GameObject:
   - component: {fileID: 1412640456}
   - component: {fileID: 1412640455}
   - component: {fileID: 1412640454}
+  - component: {fileID: 1412640459}
   m_Layer: 0
   m_Name: Dodatkowy item na pickup (2)
   m_TagString: PickupItem
@@ -1368,6 +1443,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1412640459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412640453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 3
 --- !u!1 &1487276014
 GameObject:
   m_ObjectHideFlags: 0
@@ -1483,6 +1571,8 @@ GameObject:
   - component: {fileID: 1487569803}
   - component: {fileID: 1487569802}
   - component: {fileID: 1487569801}
+  - component: {fileID: 1487569807}
+  - component: {fileID: 1487569806}
   m_Layer: 0
   m_Name: Dodatkowy item na pickup (1)
   m_TagString: PickupItem
@@ -1606,6 +1696,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1487569806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487569800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 0
+--- !u!114 &1487569807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487569800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 1
 --- !u!1 &1494095413
 GameObject:
   m_ObjectHideFlags: 0
@@ -1618,6 +1734,7 @@ GameObject:
   - component: {fileID: 1494095417}
   - component: {fileID: 1494095416}
   - component: {fileID: 1494095415}
+  - component: {fileID: 1494095418}
   m_Layer: 0
   m_Name: Glock
   m_TagString: PickupItem
@@ -1714,6 +1831,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1494095413}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1494095418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494095413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 0
 --- !u!1 &1536288000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1746,7 +1876,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 100184095}
+  - {fileID: 1223643925}
   m_Father: {fileID: 479010798}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1536288002
@@ -1974,6 +2104,7 @@ GameObject:
   - component: {fileID: 2125290599}
   - component: {fileID: 2125290598}
   - component: {fileID: 2125290597}
+  - component: {fileID: 2125290602}
   m_Layer: 0
   m_Name: Dodatkowy item na pickup
   m_TagString: PickupItem
@@ -2003,7 +2134,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -2097,6 +2228,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2125290602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125290596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333844d92236b146b270297dd8a9c9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2111,3 +2255,4 @@ SceneRoots:
   - {fileID: 240417844}
   - {fileID: 1487569805}
   - {fileID: 1412640458}
+  - {fileID: 100184095}

@@ -1,5 +1,6 @@
+// PickUp_n_Drop.cs
 using UnityEngine;
-//bron musi miec tag PickupItem
+
 public class PickUp_n_Drop : MonoBehaviour
 {
     [SerializeField]
@@ -9,6 +10,9 @@ public class PickUp_n_Drop : MonoBehaviour
 
     private InventorySystem inventory;
     private Camera playerCam;
+    
+    // NOWA ZMIENNA: Potrzebna, aby wiedzieć, gdzie upuścić.
+    private Transform dropPoint; 
 
     void Start()
     {
@@ -19,7 +23,13 @@ public class PickUp_n_Drop : MonoBehaviour
         {
             Debug.LogError("Brak wymaganego komponentu InventorySystem na tym obiekcie lub brak kamery z tagiem 'MainCamera'.");
             enabled = false;
+            return;
         }
+        
+        // Sprawdzenie, czy jest punkt do trzymania przedmiotów.
+        // Jeśli go nie ma, użyj pozycji gracza.
+        dropPoint = inventory.itemHoldPoint != null ? inventory.itemHoldPoint.parent : transform;
+        if (dropPoint == null) dropPoint = transform;
     }
 
     void Update()
@@ -43,13 +53,22 @@ public class PickUp_n_Drop : MonoBehaviour
             if (hit.collider.CompareTag("PickupItem"))
             {
                 GameObject itemToPickUp = hit.collider.gameObject;
-                
-                // Używamy oryginalnego obiektu jako "prefabu" do utworzenia instancji
-                bool pickedUp = inventory.AddItem(itemToPickUp);
+                ItemData itemData = itemToPickUp.GetComponent<ItemData>(); // POBIERZ TYP
 
-                if (pickedUp)
+                if (itemData != null)
                 {
-                    Destroy(itemToPickUp);
+                    // Używamy oryginalnego obiektu jako "prefabu" do utworzenia instancji i przekazujemy typ
+                    bool pickedUp = inventory.AddItem(itemToPickUp, itemData.itemType);
+
+                    if (pickedUp)
+                    {
+                        // USUŃ ORYGINALNY OBIEKT ZE ŚWIATA
+                        Destroy(itemToPickUp); 
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Obiekt z tagiem 'PickupItem' nie posiada komponentu ItemData!");
                 }
             }
         }
@@ -63,8 +82,9 @@ public class PickUp_n_Drop : MonoBehaviour
         {
             itemToDrop.transform.parent = null;
             
-            // Ustaw pozycję przed graczem
-            itemToDrop.transform.position = playerCam.transform.position + playerCam.transform.forward;
+            // Ustaw pozycję przed graczem (używając dropPoint lub kamery)
+            Vector3 dropPosition = playerCam.transform.position + playerCam.transform.forward;
+            itemToDrop.transform.position = dropPosition;
 
             Rigidbody rb = itemToDrop.GetComponent<Rigidbody>();
             if (rb != null)
@@ -80,7 +100,8 @@ public class PickUp_n_Drop : MonoBehaviour
                 coll.enabled = true;
             }
             
-            itemToDrop.SetActive(true);
+            // ItemToDrop jest już aktywny w SelectSlot, ale dla pewności zostawiamy
+            itemToDrop.SetActive(true); 
         }
     }
 }
