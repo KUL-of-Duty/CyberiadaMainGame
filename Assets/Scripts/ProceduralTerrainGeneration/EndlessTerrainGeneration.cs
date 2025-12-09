@@ -11,16 +11,18 @@ public class EndlessTerrainGeneration : NetworkBehaviour
     public static Vector2 playerChunkPos;
 
     int chunkSize;
-    int chunkRenderDistance; 
+    int chunkRenderDistance;
+    int negChunkRenDist;
 
     Dictionary<Vector2, TerrainChunk> terrainChunkDict = new Dictionary<Vector2, TerrainChunk>();
 
 
-    public override void OnNetworkSpawn(){
+    public override void OnNetworkSpawn(){   
         base.OnNetworkSpawn();
 
         chunkSize = GetComponent<GenerateMapArray>().mapGridWidth;
         chunkRenderDistance = Mathf.RoundToInt(maxRenderDistance / chunkSize);
+        negChunkRenDist = -Mathf.RoundToInt(maxRenderDistance / chunkSize) - 1;
     }
 
 	void Update() {
@@ -37,11 +39,10 @@ public class EndlessTerrainGeneration : NetworkBehaviour
         int currentChunkCoordX =  Mathf.RoundToInt(player.transform.position.x / chunkSize);
         int currentChunkCoordY =  Mathf.RoundToInt(player.transform.position.z / chunkSize);
 
-        for(int yOffset = -chunkRenderDistance; yOffset <= chunkRenderDistance; yOffset++)
-            for(int xOffset = -chunkRenderDistance; xOffset <= chunkRenderDistance; xOffset++)
-            {
+        for(int yOffset = negChunkRenDist; yOffset <= chunkRenderDistance; yOffset++)
+            for(int xOffset = negChunkRenDist; xOffset <= chunkRenderDistance; xOffset++)
+            { 
                 Vector2 viewedChunk = new Vector2(currentChunkCoordX + xOffset,currentChunkCoordY + yOffset);
-
                 if(terrainChunkDict.ContainsKey(viewedChunk)){
 
                 } else {
@@ -59,8 +60,7 @@ public class EndlessTerrainGeneration : NetworkBehaviour
 			bounds = new Bounds(position,Vector2.one * size);
 			Vector3 positionV3 = new Vector3(position.x,0,position.y);
 
-            Terrain terrain = Instantiate(levelTile.terrain);
-            terrain.transform.parent = parent;
+            Terrain terrain = Instantiate(levelTile.terrain, positionV3, Quaternion.identity, parent);
 		}
 
 		public void UpdateTerrainChunk() {

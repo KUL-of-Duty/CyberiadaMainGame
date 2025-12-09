@@ -17,7 +17,6 @@ public class GenerateMapArray : NetworkBehaviour
     {
         _seed = gameObject.GetComponent<SeedGenerator>().ServerSeed.Value;
     }
-
     public void GenerateTerrain()
     {
         if (_wasClicked) return;
