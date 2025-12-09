@@ -2,20 +2,25 @@ using Unity.Cinemachine;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class CameraRotate : NetworkBehaviour{
     
     CinemachineCamera CameraObject;
     public Vector3 offset;
     Rigidbody parentBody;
-    [SerializeField] float Sensivinity = 1f;
+    [SerializeField] float Sensitivity = 1f;
     Vector2 mouseAxis;
     Vector3 linkedObjectPosition = new Vector3(0,0,0);
     float validView=0;
     float deltaTime=0;
+    PlayerInput input;
+    InputAction lookAction;
 
     void Awake()
     {
+        input = GetComponent<PlayerInput>();
+        lookAction = input.actions["Look"];
         CameraObject = GetComponentInChildren<CinemachineCamera>();
         parentBody = GetComponent<Rigidbody>();
     }
@@ -39,8 +44,12 @@ public class CameraRotate : NetworkBehaviour{
     }
     void Update()
     {
-        mouseAxis.x = Input.GetAxis("Mouse X") * Time.deltaTime*Sensivinity;
-        mouseAxis.y = -Input.GetAxis("Mouse Y") * Time.deltaTime * Sensivinity;
+        Vector2 look = lookAction.ReadValue<Vector2>();
+            mouseAxis = new Vector2(
+                look.x * Time.deltaTime * Sensitivity,
+                -look.y * Time.deltaTime * Sensitivity);
+        // mouseAxis.x = Input.GetAxis("Mouse X") * Time.deltaTime*Sensivinity;
+        // mouseAxis.y = -Input.GetAxis("Mouse Y") * Time.deltaTime * Sensivinity;
         deltaTime = Time.time;
         if(IsServer&&IsOwner)
             cameraOnMouseReaction(mouseAxis, deltaTime);

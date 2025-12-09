@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(NetworkObject))]
@@ -12,10 +13,16 @@ public class Mover : NetworkBehaviour
 
     Rigidbody rb;
     Vector3 input = Vector3.zero;
+    PlayerInput pinput;
+    InputAction moveAction;
+    InputAction jumpAction;
 
     // Opcjonalnie throttle RPCs (prosty cooldown) -> tu na potrzeby debugowania co klatkę wysyłamy
     void Awake()
     {
+        pinput = GetComponent<PlayerInput>();
+        moveAction = pinput.actions["Move"];
+        jumpAction = pinput.actions["Jump"];
         rb = GetComponent<Rigidbody>();
         // rb.freezeRotation = true;
         // rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -32,10 +39,12 @@ public class Mover : NetworkBehaviour
         if (!IsOwner) return;
 
         // Input w Update
-        input.x = Input.GetAxis("Horizontal");
-        input.z = Input.GetAxis("Vertical");
+        input.x = moveAction.ReadValue<Vector2>().x;
+        input.z = moveAction.ReadValue<Vector2>().y;
+        // input.x = Input.GetAxis("Horizontal");
+        // input.z = Input.GetAxis("Vertical");
 
-        if (Input.GetButtonDown("Jump"))
+        if (jumpAction.WasPerformedThisFrame())
         {
             if (IsGroundedLocal())
             {

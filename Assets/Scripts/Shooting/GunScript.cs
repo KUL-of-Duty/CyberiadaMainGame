@@ -2,6 +2,7 @@ using Unity.Cinemachine;
 // using Unity.Entities.UniversalDelegates;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class gunScript : NetworkBehaviour
 {
@@ -12,6 +13,10 @@ public class gunScript : NetworkBehaviour
     private bool isReloading = false;
     PlayerAmmo ammo;
     public CinemachineCamera fpsCam;
+    PlayerInput playerInput;
+    InputAction shootAction;
+    InputAction reloadAction;
+    ParticleSystem particleSystem;
 
     void Start()
     {
@@ -19,6 +24,10 @@ public class gunScript : NetworkBehaviour
     }
     void Awake()
     {
+        playerInput = GetComponentInParent<PlayerInput>();
+        shootAction = playerInput.actions.FindAction("Attack");
+        reloadAction = playerInput.actions.FindAction("Reload");
+        particleSystem = GetComponent<ParticleSystem>();
         //gunObjectScript = GetComponent<GunObjectScript>();
         lastAttackTime=Time.time;
         lastReloadTime=Time.time;
@@ -31,10 +40,18 @@ public class gunScript : NetworkBehaviour
     }
     void Update(){
         if(IsClient && IsOwner){
-            if (Input.GetMouseButtonDown(0))
-                OnAttackPressed();
-            if(Input.GetKeyDown("r"))
+            //if (Input.GetMouseButtonDown(0))
+        if(shootAction.WasPressedThisFrame()){
+            OnAttackPressed();
+            Debug.Log("Attack");
+            particleSystem.Play();
+
+            }
+            //if(Input.GetKeyDown("r"))
+            if(reloadAction.WasPressedThisFrame()){
                 ReloadGunServerRpc();
+                Debug.Log("Reload");
+                }
         }
         // else if(IsServer&&IsOwner){
         //     OnAttackPressed();
