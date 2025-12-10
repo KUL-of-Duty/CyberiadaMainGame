@@ -1,4 +1,3 @@
-// IdventorySystem.cs
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic; // Dodaj do użycia słownika
@@ -9,16 +8,15 @@ public class InventorySystem : MonoBehaviour
     private const int NUM_EQUIPPABLE_SLOTS = 4; // Pistol, Rifle, Melee, Utility
     
     // Tablica przedmiotów mapowana na indeksy ItemType: 0-Pistol, 1-Rifle, 2-Melee, 3-Utility
-    // Uwaga: Używamy GameObject, bo to będzie instancja przedmiotu trzymana w ręce.
     public GameObject[] itemSlots = new GameObject[NUM_EQUIPPABLE_SLOTS]; 
     
-    // Aktualnie wybrany typ. Zaczynamy od Pustej Ręki.
+    // Aktualnie wybrany typ.
     public ItemType selectedItemType = ItemType.EmptyHand;
     
     // Dostęp do Player, aby ustawić bonus prędkości
     private Player playerMovement; 
 
-    // Referencja do miejsca trzymania broni (można ustawić w Inspekotorze, np. Child obiektu gracza)
+    // Referencja do miejsca trzymania broni
     public Transform itemHoldPoint; 
 
     void Start()
@@ -29,10 +27,9 @@ public class InventorySystem : MonoBehaviour
             Debug.LogError("Brak skryptu Player na tym samym obiekcie, nie będzie można przyspieszyć gracza!");
         }
         
-        // Upewnij się, że itemHoldPoint jest ustawiony!
         if (itemHoldPoint == null)
         {
-             Debug.LogError("itemHoldPoint nie jest ustawiony w InventorySystem!");
+            Debug.LogError("itemHoldPoint nie jest ustawiony w InventorySystem!");
         }
         
         SelectSlot();
@@ -41,21 +38,42 @@ public class InventorySystem : MonoBehaviour
     void Update()
     {
         ItemType previousSelectedType = selectedItemType;
+        ItemType newSelectedType = selectedItemType;
 
         // --- Obsługa Scrolla Myszki ---
-        int currentTypeIndex = (int)selectedItemType;
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
         
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f) 
+        if (scrollInput != 0f)
         {
-            currentTypeIndex = (currentTypeIndex + 1) % (NUM_EQUIPPABLE_SLOTS + 1); // +1 dla EmptyHand
-        }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) 
-        {
-            currentTypeIndex--;
-            if (currentTypeIndex < 0)
+            // 1. Stwórz listę aktualnie zajętych slotów (typy ItemType) oraz EmptyHand
+            List<ItemType> availableTypes = GetAvailableItemTypes();
+            
+            // Jeśli mamy tylko EmptyHand, nie rób nic
+            if (availableTypes.Count <= 1) return;
+
+            // 2. Znajdź obecny indeks w dostępnej liście
+            int currentIndex = availableTypes.IndexOf(selectedItemType);
+            
+            if (currentIndex == -1) // Powinno się zdarzyć tylko w specyficznych, błędnych sytuacjach
             {
-                currentTypeIndex = NUM_EQUIPPABLE_SLOTS; // EmptyHand
+                currentIndex = 0;
             }
+
+            // 3. Oblicz nowy indeks z cyklicznym przechodzeniem
+            if (scrollInput > 0f) // Scroll w górę (następny)
+            {
+                currentIndex = (currentIndex + 1) % availableTypes.Count;
+            }
+            else if (scrollInput < 0f) // Scroll w dół (poprzedni)
+            {
+                currentIndex--;
+                if (currentIndex < 0)
+                {
+                    currentIndex = availableTypes.Count - 1;
+                }
+            }
+
+            newSelectedType = availableTypes[currentIndex];
         }
         
         // --- Obsługa Klawiszy 1-5 ---
@@ -63,36 +81,63 @@ public class InventorySystem : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
-                currentTypeIndex = i;
+                // Przełączanie za pomocą klawiszy jest prostsze, bo ma priorytet
+                if (i < NUM_EQUIPPABLE_SLOTS && itemSlots[i] == null)
+                {
+                    // Jeśli slot itemu (0-3) jest pusty, przełącz na EmptyHand (indeks 4)
+                    newSelectedType = ItemType.EmptyHand;
+                }
+                else
+                {
+                    // Wybierz typ odpowiadający klawiszowi
+                    newSelectedType = (ItemType)i;
+                }
                 break;
             }
         }
-
-        // Zawsze upewniamy się, że nie wybrano slotu itemu, który jest pusty.
-        // Jeśli slot 1 (Pistol) jest pusty, skok na 1/Alpha1 wybierze EmptyHand.
-        if (currentTypeIndex < NUM_EQUIPPABLE_SLOTS && itemSlots[currentTypeIndex] == null)
-        {
-            // Przełącz na EmptyHand, jeśli wybrany slot jest pusty
-             selectedItemType = ItemType.EmptyHand;
-        }
-        else
-        {
-             selectedItemType = (ItemType)currentTypeIndex;
-        }
         
+        // Aktualizacja
+        selectedItemType = newSelectedType;
+
         if (previousSelectedType != selectedItemType)
         {
-             SelectSlot();
+            SelectSlot();
         }
     }
     
+    // NOWA METODA: Tworzy listę aktualnie dostępnych (zajętych) ItemType, włączając EmptyHand.
+    private List<ItemType> GetAvailableItemTypes()
+    {
+        List<ItemType> available = new List<ItemType>();
+        
+        // Dodaj wszystkie zajęte sloty
+        for (int i = 0; i < NUM_EQUIPPABLE_SLOTS; i++)
+        {
+            if (itemSlots[i] != null)
+            {
+                // Indeksy 0, 1, 2, 3 odpowiadają ItemType.Pistol, ItemType.Rifle itd.
+                available.Add((ItemType)i); 
+            }
+        }
+        
+        // Zawsze dodaj Pustą Rękę jako opcję (jej indeks to 4)
+        available.Add(ItemType.EmptyHand);
+        
+        return available;
+    }
+
     // Zwraca indeks w tablicy (0-3) dla danego typu ItemType
     private int GetItemSlotIndex(ItemType type)
     {
+        // Sprawdzanie, czy to nie jest EmptyHand, które jest poza tablicą itemSlots
+        if (type == ItemType.EmptyHand) return -1;
+        
         return (int)type;
     }
 
-    // Nowa implementacja SelectSlot
+    // Pozostałe metody (SelectSlot, AddItem, DropSelectedItem) pozostawiamy bez zmian,
+    // ponieważ operują już na selectedItemType, a nie na indeksach scrolla.
+    
     void SelectSlot()
     {
         // 1. Dezaktywuj wszystkie przedmioty i ustaw domyślny bonus prędkości na false
@@ -191,7 +236,6 @@ public class InventorySystem : MonoBehaviour
         }
     }
     
-    // --- METODA WYRZUCANIA (NOWA) ---
     public GameObject DropSelectedItem()
     {
         if (selectedItemType == ItemType.EmptyHand)
