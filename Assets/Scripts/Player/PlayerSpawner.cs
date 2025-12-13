@@ -1,6 +1,7 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSpawner : NetworkBehaviour
 {
@@ -17,6 +18,7 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void OnClientConnected(ulong player)
     {
+        Debug.Log("XD");
         GameObject playerSpawned = Instantiate(playerPrefab, spawnLocation.transform);
         playerSpawned.GetComponent<NetworkObject>().SpawnAsPlayerObject(player);
     }

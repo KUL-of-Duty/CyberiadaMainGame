@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class ConnectionManager : NetworkBehaviour
 {
-    GameObject netManager;
+    NetworkManager netManager;
     UnityTransport unityTransport;
     NetworkManager networkManager;
 
@@ -19,14 +19,14 @@ public class ConnectionManager : NetworkBehaviour
 
     private void Awake()
     {
-        netManager = FindFirstObjectByType<NetworkManager>().gameObject;
+        netManager = NetworkManager.Singleton;
         unityTransport = netManager.GetComponent<UnityTransport>();
         networkManager = netManager.GetComponent<NetworkManager>();
     }
     public void JoinLobby()
     {
         unityTransport.SetConnectionData(ifipAddress.text, Convert.ToUInt16(ifPort.text));
-        networkManager.StartClient();
+        netManager.StartClient();
         ShowLobby();
     }
 

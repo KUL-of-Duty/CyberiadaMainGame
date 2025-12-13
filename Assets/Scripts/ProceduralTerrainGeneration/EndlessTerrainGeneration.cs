@@ -2,19 +2,23 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-
 public class EndlessTerrainGeneration : NetworkBehaviour
 {
     [SerializeField] float maxRenderDistance;
     [SerializeField] GameLevel levelTile;
     private GameObject player;
     public static Vector2 playerChunkPos;
+    
+    public enum LevelTiles
+    {
+        levelTile = 1
+    }
 
     int chunkSize;
     int chunkRenderDistance;
     int negChunkRenDist;
 
-    Dictionary<Vector2, TerrainChunk> terrainChunkDict = new Dictionary<Vector2, TerrainChunk>();
+    NetworkList<Vector2> NVterrainList = new NetworkList<Vector2>();
 
 
     public override void OnNetworkSpawn(){   
@@ -43,30 +47,29 @@ public class EndlessTerrainGeneration : NetworkBehaviour
             for(int xOffset = negChunkRenDist; xOffset <= chunkRenderDistance; xOffset++)
             { 
                 Vector2 viewedChunk = new Vector2(currentChunkCoordX + xOffset,currentChunkCoordY + yOffset);
-                if(terrainChunkDict.ContainsKey(viewedChunk)){
+                if(NVterrainList.Contains(viewedChunk)){
 
                 } else {
-                    terrainChunkDict.Add(viewedChunk, new TerrainChunk(viewedChunk, chunkSize, levelTile,transform));
+                    NVterrainList.Add(viewedChunk);
+                    InstantiateChunkGenerationClientRPC(viewedChunk, chunkSize);
                 }
             }
             
     }
-    public class TerrainChunk {
-    Vector2 position;
-		Bounds bounds;
 
-		public TerrainChunk(Vector2 coord, int size, GameLevel levelTile, Transform parent) {
-			position = coord * size;
-			bounds = new Bounds(position,Vector2.one * size);
+    public void LocalGenerateChunk(Vector2 coord, int size)
+    {
+            Vector2 position = coord * size;
 			Vector3 positionV3 = new Vector3(position.x,0,position.y);
 
-            Terrain terrain = Instantiate(levelTile.terrain, positionV3, Quaternion.identity, parent);
-		}
+            Terrain terrain = Instantiate(levelTile.terrain, positionV3, Quaternion.identity, gameObject.transform);
+    }
 
-		public void UpdateTerrainChunk() {
-			float viewerDstFromNearestEdge = Mathf.Sqrt(bounds.SqrDistance(playerChunkPos));
-		}
- 
+    [ClientRpc]
+    public void InstantiateChunkGenerationClientRPC(Vector2 coord, int size)
+    {
+        LocalGenerateChunk(coord, size);
     }
 }
 
+ 
