@@ -1,7 +1,6 @@
 using Unity.Cinemachine;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 public class CameraRotate : NetworkBehaviour{
@@ -11,7 +10,6 @@ public class CameraRotate : NetworkBehaviour{
     Rigidbody parentBody;
     [SerializeField] float Sensitivity = 1f;
     Vector2 mouseAxis;
-    Vector3 linkedObjectPosition = new Vector3(0,0,0);
     float validView=0;
     float deltaTime=0;
     PlayerInput input;
@@ -44,38 +42,35 @@ public class CameraRotate : NetworkBehaviour{
     }
     void Update()
     {
+        deltaTime = Time.deltaTime;
+        //Debug.Log("Sens: "+Sensitivity+" Vector: "+mouseAxis);
         Vector2 look = lookAction.ReadValue<Vector2>();
-            mouseAxis = new Vector2(
-                look.x * Time.deltaTime * Sensitivity,
-                -look.y * Time.deltaTime * Sensitivity);
-        // mouseAxis.x = Input.GetAxis("Mouse X") * Time.deltaTime*Sensivinity;
-        // mouseAxis.y = -Input.GetAxis("Mouse Y") * Time.deltaTime * Sensivinity;
-        deltaTime = Time.time;
+        mouseAxis = new Vector2(look.x,-look.y);
         if(IsServer&&IsOwner)
-            cameraOnMouseReaction(mouseAxis, deltaTime);
+            cameraOnMouseReaction(mouseAxis,deltaTime);
         else if(IsClient && IsOwner)
         {
-            CameraOnMouseReactionServerRpc(mouseAxis, deltaTime);
+            CameraOnMouseReactionServerRpc(mouseAxis,deltaTime);
         }
         //Debug.Log(validView);
         //CameraObject.transform.Rotate(mouseAxis.y,0,0);
     }
-    void cameraOnMouseReaction(Vector2 mouseAxis, float deltaTime, ServerRpcParams rpcParams = default)
+    void cameraOnMouseReaction(Vector2 mouseAxis,float deltaTime, ServerRpcParams rpcParams = default)
     {
         //Debug.Log(mouseAxis);
         if(!IsServer) return;
-        parentBody.transform.Rotate(0,mouseAxis.x*deltaTime, 0);
+        parentBody.transform.Rotate(0,mouseAxis.x*deltaTime*Sensitivity, 0);
+        validView = CameraObject.transform.eulerAngles.x-180>0?CameraObject.transform.eulerAngles.x-180:
+                                                                CameraObject.transform.eulerAngles.x+180; 
         
-        validView = CameraObject.transform.eulerAngles.x-180>0?CameraObject.transform.eulerAngles.x-180:CameraObject.transform.eulerAngles.x+180;
-
-        mouseAxis.y=Mathf.Clamp(mouseAxis.y*deltaTime+validView,93,267)-validView;
+        mouseAxis.y=Mathf.Clamp(mouseAxis.y*deltaTime*Sensitivity+validView,93,267)-validView;
         CameraObject.transform.Rotate(mouseAxis.y,0,0);
         //CameraObject.transform.rotation.Set(CameraObject.transform.rotation.x,transform.rotation.y,0,0);
     }
 
 [ServerRpc]
-    void CameraOnMouseReactionServerRpc(Vector2 input, float deltaTime)
+    void CameraOnMouseReactionServerRpc(Vector2 input,float deltaTime)
     {
-        cameraOnMouseReaction(input, deltaTime);
+        cameraOnMouseReaction(input,deltaTime);
     }
 }

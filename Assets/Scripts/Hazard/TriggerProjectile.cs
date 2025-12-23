@@ -11,7 +11,7 @@ public class NewMonoBehaviourScript : NetworkBehaviour
             foreach (GameObject g in projectile){
                  NetworkObject no = g.GetComponent<NetworkObject>();
                 if (!no.IsSpawned)
-                    no.Spawn(); // rejestruje w SpawnManagerze
+                    no.Spawn();
                 g.GetComponent<SphereCollider>().enabled =true;
                 g.GetComponent<MeshRenderer>().enabled =true;
             }

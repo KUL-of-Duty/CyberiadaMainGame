@@ -17,6 +17,10 @@ public class gunScript : NetworkBehaviour
     InputAction shootAction;
     InputAction reloadAction;
     ParticleSystem particleSystem;
+    bool isBurstActive = false;
+    int burstShotsLeft = 0;
+    float nextBurstShotTime = 0f;
+
 
     void Start()
     {
@@ -39,26 +43,33 @@ public class gunScript : NetworkBehaviour
         ammo = GetComponentInParent<PlayerAmmo>();
     }
     void Update(){
-        if(IsClient && IsOwner){
-            //if (Input.GetMouseButtonDown(0))
-        if(shootAction.WasPressedThisFrame()){
-            OnAttackPressed();
-            Debug.Log("Attack");
-            particleSystem.Play();
+    if(!IsClient || !IsOwner) return;
 
-            }
-            //if(Input.GetKeyDown("r"))
-            if(reloadAction.WasPressedThisFrame()){
-                ReloadGunServerRpc();
-                Debug.Log("Reload");
-                }
-        }
-        // else if(IsServer&&IsOwner){
-        //     OnAttackPressed();
-        //     ReloadGunServerRpc();
-        // }
-        
+    // --- START ATTACK ---
+    if(shootAction.IsPressed()){
+        OnAttackPressed(); // ustawia isBurstActive i burstShotsLeft jeśli BURST
+        Debug.Log("Attack");
+        particleSystem.Play();
     }
+
+    // --- RELOAD ---
+    if(reloadAction.WasPressedThisFrame()){
+        ReloadGun();
+        Debug.Log("Reload");
+    }
+
+    // --- BURST STATE MACHINE ---
+    if(isBurstActive){
+        if (burstShotsLeft <= 0 || gunObjectScript.ammo <= 0){
+            isBurstActive = false;
+        } else if (Time.time >= nextBurstShotTime){
+            TryShoot();
+            burstShotsLeft--;
+            nextBurstShotTime = Time.time + gunObjectScript.burstInterval;
+        }
+    }
+}
+
     
     void Attack()
     {
@@ -74,47 +85,49 @@ public class gunScript : NetworkBehaviour
             if(target==null) return;
             ulong id = target.NetworkObjectId;
             
-            ReportHitServerRpc(id, gunObjectScript.damage);
+            ReportHit(id, gunObjectScript.damage);
         }
         lastAttackTime = Time.time;
         
     }
     void OnAttackPressed(){
-            if (gunObjectScript.WeaponType==TypeOfWeapon.SINGLE_SHOT){
+            
+            if (shootAction.WasPressedThisFrame()&&gunObjectScript.WeaponType==TypeOfWeapon.SINGLE_SHOT){
+                if(Time.time>lastAttackTime+gunObjectScript.attackInterval)
+                {
+                    TryShoot();
+                }
+            }
+            else if (shootAction.WasPressedThisFrame()&&gunObjectScript.WeaponType == TypeOfWeapon.BURST_FIRE)
+            {
+                if (!isBurstActive && Time.time > lastAttackTime + gunObjectScript.attackInterval)
+                {
+                    isBurstActive = true;
+                    burstShotsLeft = gunObjectScript.burstBullets;
+                    nextBurstShotTime = Time.time;
+                }
+            }
+            else if (gunObjectScript.WeaponType==TypeOfWeapon.AUTO_FIRE){
                 if (Time.time>lastAttackTime+gunObjectScript.attackInterval)
                 {
                     TryShoot();
                 }
             }
-            else if (gunObjectScript.WeaponType==TypeOfWeapon.BURST_FIRE){
-                int firedBullets = 0;
-                if(Time.time>lastAttackTime+gunObjectScript.attackInterval)
-                    isAttacking = true;
-                while (isAttacking)
-                {
-                    if(gunObjectScript.ammo==0||firedBullets==gunObjectScript.burstBullets) isAttacking=false;
-                    if (firedBullets < gunObjectScript.burstBullets && Time.time > lastAttackTime + gunObjectScript.burstInterval)
-                    {
-                        TryShoot();
-                        firedBullets++;
-                    }
-                }
-            }
-            else if (gunObjectScript.WeaponType==TypeOfWeapon.AUTO_FIRE){
-                if(Time.time>lastAttackTime+gunObjectScript.attackInterval)
-                {
-                    TryShoot();
-                }
-            }
             else if (gunObjectScript.WeaponType==TypeOfWeapon.MELEE){
-                if(Time.time>lastAttackTime+gunObjectScript.attackInterval)
+                if(Time.time>lastAttackTime+gunObjectScript.attackInterval){
                     TryShoot();
+                    }
             }
+            
     }
     void TryShoot(){
         if(!IsOwner) return;
-        //Debug.Log("Player: "+NetworkObjectId+" Ammo: "+ammo.Ammo.Value);
-        if(ammo!=null&&ammo.Ammo.Value>0){
+        Debug.Log("Player: "+NetworkObjectId+" Ammo: "+ammo.Ammo.Value);
+        if (gunObjectScript.WeaponType != TypeOfWeapon.MELEE)
+        {
+            Attack();
+        }
+        else if(ammo!=null&&ammo.Ammo.Value>0){
             ammo.ConsumeAmmoServerRpc(1);
             Attack();
         }
@@ -122,12 +135,8 @@ public class gunScript : NetworkBehaviour
     [ServerRpc]
     void ReloadGunServerRpc(){
         //if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
-            
-
             Debug.Log($"Reload na {NetworkObjectId}");
             ammo.Ammo.Value=gunObjectScript.maxAmmo;
-            
-
         //}
     }
     [ServerRpc]
@@ -144,5 +153,19 @@ public class gunScript : NetworkBehaviour
          Debug.Log(target);
         if(target!=null)
             target.TakeDamage(damage);
+    }
+
+    void ReloadGun(){
+        //if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
+            Debug.Log($"Reload na {NetworkObjectId}");
+            ammo.Ammo.Value=gunObjectScript.maxAmmo;
+            ReloadGunServerRpc();
+        //}
+    }
+
+    void ReportHit(ulong objectId,float damage){
+        Debug.Log("ReportHit");
+        Debug.Log(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId,out var o));
+        ReportHitServerRpc(objectId,damage);
     }
 }

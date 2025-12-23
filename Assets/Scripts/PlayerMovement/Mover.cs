@@ -17,7 +17,6 @@ public class Mover : NetworkBehaviour
     InputAction moveAction;
     InputAction jumpAction;
 
-    // Opcjonalnie throttle RPCs (prosty cooldown) -> tu na potrzeby debugowania co klatkę wysyłamy
     void Awake()
     {
         pinput = GetComponent<PlayerInput>();
@@ -27,6 +26,15 @@ public class Mover : NetworkBehaviour
         // rb.freezeRotation = true;
         // rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            enabled = false;
+            return;
+        }
+    }
+
 
     void Start()
     {
@@ -35,20 +43,16 @@ public class Mover : NetworkBehaviour
 
     void Update()
     {
-        // Tylko właściciel czyta input
         if (!IsOwner) return;
-
-        // Input w Update
-        input.x = moveAction.ReadValue<Vector2>().x;
-        input.z = moveAction.ReadValue<Vector2>().y;
-        // input.x = Input.GetAxis("Horizontal");
-        // input.z = Input.GetAxis("Vertical");
+        if(IsGroundedLocal()){
+            input.x = moveAction.ReadValue<Vector2>().x;
+            input.z = moveAction.ReadValue<Vector2>().y;
+        }
 
         if (jumpAction.WasPerformedThisFrame())
         {
             if (IsGroundedLocal())
             {
-                // wysyłamy żądanie do serwera
                 RequestJumpServerRpc();
                 Debug.Log("[Mover] Jump button pressed -> RequestJumpServerRpc sent");
             }
@@ -57,15 +61,17 @@ public class Mover : NetworkBehaviour
                 Debug.Log("[Mover] Jump pressed but not grounded (local check)");
             }
         }
-
-        // Wyślij input do serwera co Update (można optymalizować)
         SendMoveInputServerRpc(input, Time.deltaTime);
     }
 
-    // Serwer aplikuje ruch (autorytatywnie). ServerRpc wykonuje się na serwerze.
+    // Server movement apolication
     [ServerRpc(RequireOwnership = true)]
     void SendMoveInputServerRpc(Vector3 inputFromClient, float deltaTime, ServerRpcParams rpcParams = default)
     {
+        if(input == Vector3.zero&&rb.angularVelocity != Vector3.zero)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
         if (!IsServer) return;
 
         Vector3 worldDelta = (transform.right * inputFromClient.x + transform.forward * inputFromClient.z) * moveSpeed * deltaTime;
@@ -95,13 +101,13 @@ public class Mover : NetworkBehaviour
 
     bool IsGroundedLocal()
     {
-        // lokalny check: niedoskonały, ale daje szybką informację
+        // local checking if player is grouded
         return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance);
     }
 
     bool ServerIsGrounded()
     {
-        // ten sam check uruchomiony po stronie serwera
+        // server checking if player is grouded
         return Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance);
     }
 }

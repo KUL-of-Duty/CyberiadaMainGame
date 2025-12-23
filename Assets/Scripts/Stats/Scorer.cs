@@ -6,33 +6,36 @@ using Unity.Netcode;
 public class Scorer : NetworkBehaviour{
 
     [SerializeField] Image[] hp = new Image[4];
-    private NetworkVariable<int> score= new NetworkVariable<int>(100,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
+    public NetworkVariable<float> score= new NetworkVariable<float>(100,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
     private int ileHP=3;
-    [SerializeField] TextMeshProUGUI tmp;
+    TextMeshProUGUI tmp;
     //Mover mover;
     CameraRotate cr;
     Vector3 end;
     void Start()
     {
+        if(!IsOwner) return;
+        tmp = GetComponentInChildren<TextMeshProUGUI>();
         end = new Vector3(-tmp.transform.position.x/2,-tmp.transform.position.y/2,0);
         //mover = GetComponent<Mover>();
         cr = GetComponent<CameraRotate>();
     }
     void Update()
     {
+        if(!IsOwner)return;
         healthChecker();
     }
 
     private void OnCollisionEnter(Collision other) {
             if (other.gameObject.tag == "Hazard")
             {
-                score.Value -= 10;
+                ChangeScoreValueServerRpc(10);
             }
             else if(other.gameObject.tag == "Envrioment")
             {
-                score.Value--;
+                ChangeScoreValueServerRpc(1);
             }    
-            tmp.text="HP: "+score;
+            tmp.text="HP: "+score.Value;
             
     }
     void healthChecker()
@@ -46,7 +49,7 @@ public class Scorer : NetworkBehaviour{
         }else{
                 Destroy(hp[0]);
                 ileHP--;
-                score.Value=0;
+                ChangeScoreValueServerRpc(score.Value);
                 tmp.transform.Translate(end);
                 end=Vector3.zero;
                 tmp.text="Koniec";
@@ -54,6 +57,13 @@ public class Scorer : NetworkBehaviour{
                 GetComponent<Mover>().enabled =false;
                 cr.enabled=false;
             }
-        Debug.Log("pozycja: "+tmp.transform.position.x);
+        //Debug.Log("POsition: "+tmp.transform.position.x);
+        Debug.Log(tmp.text);
+    }
+
+    [ServerRpc]
+    void ChangeScoreValueServerRpc(float value)
+    {
+        score.Value -=value;
     }
 }
