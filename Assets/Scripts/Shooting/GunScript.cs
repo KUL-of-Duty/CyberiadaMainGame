@@ -28,14 +28,14 @@ public class gunScript : NetworkBehaviour
     }
     void Awake()
     {
-        playerInput = GetComponentInParent<PlayerInput>();
+        playerInput = GetComponent<PlayerInput>();
         shootAction = playerInput.actions.FindAction("Attack");
         reloadAction = playerInput.actions.FindAction("Reload");
         particleSystem = GetComponent<ParticleSystem>();
-        //gunObjectScript = GetComponent<GunObjectScript>();
         lastAttackTime=Time.time;
         lastReloadTime=Time.time;
-        //gunObjectScript.range=gunObjectScript.WeaponType==TypeOfWeapon.BURST_FIRE?2f:gunObjectScript.range;
+        shootAction.Enable();
+        reloadAction.Enable();
     }
 
     public override void OnNetworkSpawn()
@@ -44,9 +44,8 @@ public class gunScript : NetworkBehaviour
     }
     void Update(){
     if(!IsClient || !IsOwner) return;
-
-    // --- START ATTACK ---
-    if(shootAction.IsPressed()){
+        // --- START ATTACK ---
+        if (shootAction.IsPressed()){
         OnAttackPressed(); // ustawia isBurstActive i burstShotsLeft jeśli BURST
         Debug.Log("Attack");
         particleSystem.Play();

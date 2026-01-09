@@ -11,7 +11,7 @@ public class ChunkEnviromentGenerator : MonoBehaviour
 
         foreach (var point in spawnPoints)
         {
-            Instantiate(cEnv.chunkTrees[Random.Range(0, cEnv.chunkTrees.Length)], transform.position + new Vector3(point.x, 22, point.y), Quaternion.identity, transform);
+            Instantiate(cEnv.chunkTrees[Random.Range(0, cEnv.chunkTrees.Length)], transform.position + new Vector3(point.x, 20, point.y), Quaternion.identity, transform);
         }
 
         int mushroomsToSpawn = cEnv.minMushrooms;
