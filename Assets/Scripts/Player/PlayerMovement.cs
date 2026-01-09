@@ -45,6 +45,8 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField]
     private float _jumpForce = 15f;
     private float _jumpVelocity = 0f;
+    [SerializeField]
+    private float _heightBounds = 20f;
 
     public Vector3 MoveVector { get; private set; }
     public Vector3 RotateVector { get; private set; }
@@ -101,7 +103,7 @@ public class PlayerMovement : NetworkBehaviour
     private void Gravity()
     {
         if (_isGrounded && _velocity.y < 0) _velocity.y = -2f;
-        if (!_isGrounded)
+        if (!_isGrounded && transform.position.y > _heightBounds)
         {
             _velocity.y += _gravityForce * Time.deltaTime;
             _clientMovement.UpdateGravitationServerRPC(_velocity * Time.deltaTime);

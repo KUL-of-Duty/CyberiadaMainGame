@@ -9,7 +9,6 @@ using UnityEngine.UI;
 public class ConnectionManager : NetworkBehaviour
 {
     NetworkManager netManager;
-    UnityTransport unityTransport;
 
     [SerializeField] TMP_InputField ifipAddress;
     [SerializeField] TMP_InputField ifPort;

@@ -133,3 +133,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cEnv: {fileID: 11400000, guid: bdef812725b58484b8be0b55a3d6ca20, type: 2}
+  mushroom: {fileID: 4630215550036261582, guid: 9910ccc517b27384dba2fa7bebeaba04, type: 3}

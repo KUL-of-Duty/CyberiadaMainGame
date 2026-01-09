@@ -16,7 +16,8 @@ MonoBehaviour:
   chunkTrees:
   - {fileID: 310075688840674183, guid: b6bb1925d57aacd48aeff514742ded4f, type: 3}
   chunkOtherObjects: []
-  maxMushrooms: 3
-  minMushrooms: 1
-  multipleMushroomsChance: 10
-  mushroomsPossible: []
+  maxMushrooms: 5
+  minMushrooms: 3
+  multipleMushroomsChance: 25
+  mushroomsPossible:
+  - {fileID: 4630215550036261582, guid: 9910ccc517b27384dba2fa7bebeaba04, type: 3}
