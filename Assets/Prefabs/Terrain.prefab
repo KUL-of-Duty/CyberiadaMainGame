@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1142048455401995930}
   - component: {fileID: 986793763542428877}
   - component: {fileID: 6584316969519117502}
-  - component: {fileID: 841269635468967418}
-  - component: {fileID: 7801010068919889633}
+  - component: {fileID: 276318866596965115}
+  - component: {fileID: 2158875846224622349}
   m_Layer: 14
   m_Name: Terrain
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 5293444105406562376}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -128, y: -20, z: -128}
+  m_LocalPosition: {x: -128, y: 0, z: -128}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -95,7 +95,7 @@ TerrainCollider:
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: a8462fe3317683140ac54b9141f41ba3, type: 2}
   m_EnableTreeColliders: 1
---- !u!114 &841269635468967418
+--- !u!114 &276318866596965115
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,20 +107,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 657710003
+  GlobalObjectIdHash: 2386615397
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
+  SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &7801010068919889633
+--- !u!114 &2158875846224622349
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,16 +129,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5293444105406562376}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69f6f56d31770e74590d3bc6ac853b28, type: 3}
+  m_Script: {fileID: 11500000, guid: 71349652bf142074e9a1ff5cd1c8e898, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tree: {fileID: 310075688840674183, guid: b6bb1925d57aacd48aeff514742ded4f, type: 3}
-  depth: 20
-  height: 512
-  width: 512
-  yOffSet: 10
-  seed: 0
-  scale: 100
-  octaves: 5
-  lucunarity: 1.5
-  persistance: 0.5
+  cEnv: {fileID: 11400000, guid: bdef812725b58484b8be0b55a3d6ca20, type: 2}

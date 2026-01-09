@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a0ada9f6f76f9f498d706b7c51d46e8, type: 3}
+  m_Name: Plains
+  m_EditorClassIdentifier: 
+  chunkType: Plains
+  chunkTrees:
+  - {fileID: 310075688840674183, guid: b6bb1925d57aacd48aeff514742ded4f, type: 3}
+  chunkOtherObjects: []
+  maxMushrooms: 3
+  minMushrooms: 1
+  multipleMushroomsChance: 10
+  mushroomsPossible: []

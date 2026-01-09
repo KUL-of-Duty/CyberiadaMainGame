@@ -10,34 +10,34 @@ public class ConnectionManager : NetworkBehaviour
 {
     NetworkManager netManager;
     UnityTransport unityTransport;
-    NetworkManager networkManager;
 
     [SerializeField] TMP_InputField ifipAddress;
     [SerializeField] TMP_InputField ifPort;
 
-    [SerializeField] GameObject lobby;
-
     private void Awake()
     {
         netManager = NetworkManager.Singleton;
-        unityTransport = netManager.GetComponent<UnityTransport>();
-        networkManager = netManager.GetComponent<NetworkManager>();
+    }
+
+    private void Update()
+    {
+        if(netManager == null) netManager = NetworkManager.Singleton;
     }
     public void JoinLobby()
     {
-        unityTransport.SetConnectionData(ifipAddress.text, Convert.ToUInt16(ifPort.text));
+        netManager.GetComponent<UnityTransport>().SetConnectionData(ifipAddress.text, Convert.ToUInt16(ifPort.text));
         netManager.StartClient();
-        ShowLobby();
+        SceneManager.LoadScene("MainLevel", LoadSceneMode.Single);
     }
 
     public void HostLobby()
     {
-        networkManager.StartHost();
+        netManager.StartHost();
         ShowLobby();
     }
 
     public void ShowLobby()
     {
-        netManager.GetComponent<NetworkManager>().SceneManager.LoadScene("HeliLobby", LoadSceneMode.Single);
+        netManager.GetComponent<NetworkManager>().SceneManager.LoadScene("MainLevel", LoadSceneMode.Single);
     }
 }

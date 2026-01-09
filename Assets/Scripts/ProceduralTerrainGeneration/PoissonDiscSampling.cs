@@ -6,10 +6,9 @@ public class PoissonDiscSampling : MonoBehaviour
 {
     [Header("Poisson Base Values")]
     [SerializeField] float radius = 3;
-    [SerializeField] GameObject objectToGenerate;
     [SerializeField] int seed = 10000;
-    [SerializeField] int width = 256;
-    [SerializeField] int height = 256;
+    [SerializeField] int width = 512;
+    [SerializeField] int height = 512;
 
     [Header("Grid system")]
     float gridSize;
@@ -18,11 +17,11 @@ public class PoissonDiscSampling : MonoBehaviour
     [Header("Lists")]
     List<Vector2> activePoints = new List<Vector2>();
     public List<Vector2> points = new List<Vector2>();
+
     System.Random rng;
 
-    public IEnumerator InitializePoisson()
+    public void Start()
     {
-        seed = GetComponent<SeedGenerator>().ServerSeed.Value;
         rng = new System.Random(seed);
         gridSize = radius / Mathf.Sqrt(2f);
         grid = new int[Mathf.CeilToInt(width / gridSize), Mathf.CeilToInt(height / gridSize)];
@@ -37,11 +36,7 @@ public class PoissonDiscSampling : MonoBehaviour
         activePoints.Add(firstPoint);
         points.Add(firstPoint);
         FillGridAt(firstPoint, 0);
-
         GeneratePoints();
-
-        yield return gameObject.GetComponent<TerrainGenerator>().GenerateTrees();
-        yield return new WaitForSeconds(1f);
     }
 
     void GeneratePoints()

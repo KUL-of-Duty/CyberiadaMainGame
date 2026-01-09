@@ -65,7 +65,7 @@ public class PlayerMovement : NetworkBehaviour
         if (IsOwner) _playerCamera.gameObject.SetActive(true);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!IsOwner) return;
         _isGrounded = Physics.CheckSphere(_groundCheck.transform.position, _groundRadius, _groundLayer);

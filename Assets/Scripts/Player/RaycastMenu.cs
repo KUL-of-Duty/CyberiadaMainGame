@@ -30,7 +30,7 @@ public class RaycastMenu : NetworkBehaviour
                 if (hit.collider.gameObject.GetComponentInParent<Button>())
                 {
                     hit.collider.gameObject.GetComponentInParent<Button>().onClick.Invoke();
-                }
+                }   
             }
         }
     }
