@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "CyberiadaMainGame.slnx"
+    "dotnet.defaultSolution": "Adrian_Zlepka.slnx"
 }

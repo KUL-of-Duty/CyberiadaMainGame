@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class HpBar : MonoBehaviour
 {
- 
+    // Przeciągnij tutaj komponent Slider z UI
     public Slider slider;
 
     public void SetMaxHealth(int health)

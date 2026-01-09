@@ -1,247 +1,120 @@
 using UnityEngine;
 
-
-public class Player : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public class PlayerMovement : MonoBehaviour
 {
-    [Header("Ustawienia Kamery")]
-    [SerializeField] public float mouseSensitivity = 2f;
-    private float verticalRotation = 0f;
-    private Transform cameraTransform;
-    
+    [Header("Referencje")]
+    public Transform cameraTarget; 
+
     [Header("Ustawienia Ruchu")]
+    public float walkSpeed = 5f;
+    public float sprintSpeed = 10f;
+    public float jumpForce = 8f;
+    public float emptyHandBonus = 2f;
+
+    [Header("Kamera")]
+    public float sensitivity = 2f;
+    private float verticalRotation = 0f;
+
+    [Header("Fizyka i Podłoże")]
+    public LayerMask groundLayer;
+    public Transform groundCheck;     // Obiekt na dole stóp
+    public float groundDistance = 0.3f; // Promień sfery sprawdzającej podłoże
+    public float jumpCooldown = 0.15f;  // Czas blokady sprawdzania ziemi po skoku
+    
     private Rigidbody rb;
-    [SerializeField, Tooltip("Bazowa prędkość chodzenia.")] 
-    public float WalkSpeed = 5f; 
-    [SerializeField, Tooltip("Dodatkowa prędkość podczas sprintu.")] 
-    public float SprintBonus = 5f; 
-    [SerializeField, Tooltip("Wartość zmniejszająca prędkość podczas kucania (np. 3f).")]
-    public float CrouchSpeedPenalty = 3f;
-    private float currentMoveSpeed;
-
-    private float emptyHandSpeedBonus = 2f; 
-    private bool isRunningEmptyHand = false;
-  
-    [Header("Ustawienia Kucania")]
-    [SerializeField, Tooltip("Obniżenie kamery w dół o tę wartość podczas kucania.")]
-    private float crouchCameraOffset = 0.5f; 
-    [SerializeField, Tooltip("Szybkość, z jaką kamera płynnie zmienia wysokość.")]
-    private float crouchSmoothTime = 0.1f;
-    
-    private bool isCrouching = false;
-    private float defaultCameraY;
-    private float currentCameraY;
-    private float velocityY = 0.0f; 
-
-    
-    [Header("Ustawienia Skoku")]
-    [SerializeField] public float jumpForce = 10f;
-    [SerializeField] public float fallMultiplier = 2.5f; 
-    [SerializeField] public float ascendMultiplier = 2f; 
-    private bool isGrounded = true;
-    [SerializeField] public LayerMask groundLayer;
-    [SerializeField, Tooltip("Długość Raycasta do sprawdzania podłoża.")] 
-    private float groundCheckDistance = 0.2f;
-
-    
-    private float playerHeight;
-    private float raycastOriginOffset;
-
-    [Header("Ustawienia Staminy")]
-    [SerializeField]
-    public float maxStamina = 100f;
-    [SerializeField]
-    public float staminaDrainRate = 20f;
-    [SerializeField]
-    public float staminaRegenRate = 10f;
-    [SerializeField]
-    public float regenDelay = 1.5f;
-
-    private float currentStamina;
-    private float regenTimer; 
-    private bool canSprint = true;
+    private bool isGrounded;
+    private bool hasEmptyHandBonus;
+    private float lastJumpTime;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        
+        // Blokujemy rotację żeby postać się nie przewracała
         rb.freezeRotation = true;
         
-        if (Camera.main != null)
-        {
-            cameraTransform = Camera.main.transform;
-            defaultCameraY = cameraTransform.localPosition.y;
-            currentCameraY = defaultCameraY;
-        }
-        else
-        {
-            Debug.LogError("Zmien tag kamery na 'MainCamera'.");
-        }
-
-        if (GetComponent<Collider>() != null)
-        {
-            playerHeight = GetComponent<Collider>().bounds.size.y;
-            raycastOriginOffset = (playerHeight / 2) - 0.05f; 
-        }
-
-        currentStamina = maxStamina;
-
+        // Interpolacja => płynny ruch kamery i postaci
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     void Update()
     {
-        RotateCamera();
-        HandleCrouching();
-        HandleStamina();
-
-        if (Input.GetButtonDown("Jump") && isGrounded && !isCrouching) 
+        HandleRotation();
+        
+        // Skok tylko gdy jesteśmy na ziemi
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             Jump();
         }
-
-        CheckGrounded();
     }
 
     void FixedUpdate()
     {
-        MovePlayer();
-        ApplyJumpPhysics();
+        CheckGround();
+        Move();
     }
 
-    void HandleStamina()
+    void HandleRotation()
     {
-        bool isRequestingSprint = Input.GetKey(KeyCode.LeftShift) && !isCrouching;
-        bool isSprinting = isRequestingSprint && canSprint;
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
+
+        // Obrót lewo-prawo (postać)
+        transform.Rotate(Vector3.up * mouseX);
+
+        // Obrót góra-dół (kamera)
+        verticalRotation -= mouseY;
+        verticalRotation = Mathf.Clamp(verticalRotation, -80f, 80f);
+        cameraTarget.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+    }
+
+    void Move()
+    {
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+
+        // Wybór prędkości
+        float speed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
         
-        if (isSprinting)
-        {
-            currentStamina -= staminaDrainRate * Time.deltaTime;
-            regenTimer = regenDelay; 
-            
-            if (currentStamina <= 0f)
-            {
-                currentStamina = 0f;
-                canSprint = false;
-            }
-        }
-        else
-        {
-            if (currentStamina < maxStamina)
-            {
-                if (regenTimer > 0)
-                {
-                    regenTimer -= Time.deltaTime;
-                }
-                else
-                {
-                    currentStamina += staminaRegenRate * Time.deltaTime;
-                    currentStamina = Mathf.Min(currentStamina, maxStamina);
-                }
-            }
+        // Dodanie bonusu za puste ręce
+        if (hasEmptyHandBonus) speed += emptyHandBonus;
 
-            if (currentStamina > 0f)
-            {
-                canSprint = true;
-            }
-        }
-    }
-
-
-   void HandleCrouching()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
-        {
-            isCrouching = true;
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftControl))
-        {
-            isCrouching = false;
-        }
-
-        float targetY = isCrouching ? defaultCameraY - crouchCameraOffset : defaultCameraY;
-        currentCameraY = Mathf.SmoothDamp(currentCameraY, targetY, ref velocityY, crouchSmoothTime);
+        // Obliczanie kierunku w zależności do obrotu postaci
+        Vector3 moveDir = (transform.forward * v + transform.right * h).normalized;
         
-        if (cameraTransform != null)
-        {
-            Vector3 localPos = cameraTransform.localPosition;
-            cameraTransform.localPosition = new Vector3(localPos.x, currentCameraY, localPos.z);
-        }
-    }
-    // Wywoływane przez InventorySystem
-    public void SetSpeedBonus(bool enableEmptyHand)
-    {
-        isRunningEmptyHand = enableEmptyHand;
-    }
-
-    void MovePlayer()
-    {
-        currentMoveSpeed = WalkSpeed;
-
-        bool isSprinting = Input.GetKey(KeyCode.LeftShift) && !isCrouching && canSprint;
-        if (isSprinting) 
-        {
-            currentMoveSpeed += SprintBonus;
-        }
-
-        if (isCrouching)
-        {
-            currentMoveSpeed = Mathf.Max(0f, currentMoveSpeed - CrouchSpeedPenalty);
-        }
-        
-        // Bonus Pustej Ręki
-        if (isRunningEmptyHand && !isSprinting) 
-        {
-            currentMoveSpeed += emptyHandSpeedBonus;
-        }
-
-        float moveHorizontal = Input.GetAxisRaw("Horizontal");
-        float moveForward = Input.GetAxisRaw("Vertical");
-        
-        Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
-        
-        Vector3 targetVelocity = new Vector3(
-            movement.x * currentMoveSpeed, 
-            rb.linearVelocity.y, 
-            movement.z * currentMoveSpeed
-        );
-
-        rb.linearVelocity = targetVelocity;
-    }
-    void RotateCamera()
-    {
-        if (cameraTransform == null) return;
-
-        float horizontalRotation = Input.GetAxis("Mouse X") * mouseSensitivity;
-        transform.Rotate(0, horizontalRotation, 0);
-
-        verticalRotation -= Input.GetAxis("Mouse Y") * mouseSensitivity;
-        verticalRotation = Mathf.Clamp(verticalRotation, -90f, 90f);
-
-        cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
-    }
-
-    void CheckGrounded()
-    {
-        Vector3 rayOrigin = transform.position - Vector3.up * raycastOriginOffset;
-        isGrounded = Physics.Raycast(rayOrigin, Vector3.down, groundCheckDistance, groundLayer);
+        // Nadawanie prędkości przy zachowaniu grawitacji
+        rb.linearVelocity = new Vector3(moveDir.x * speed, rb.linearVelocity.y, moveDir.z * speed);
     }
 
     void Jump()
     {
+        //Resetujemy prędkość pionową, żeby skok nie kumulował pędu
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        
+        // Nadajemy siłę impulsu w górę
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        
+        // Zapisujemy czas skoku i natychmiast wyłączamy isGrounded
+        lastJumpTime = Time.time;
         isGrounded = false;
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
     }
 
-    void ApplyJumpPhysics()
+    void CheckGround()
     {
-        if (rb.linearVelocity.y < 0) 
+        //po prostu zrobienie punktu odpowiedzialnego za "stopy"
+        if (Time.time > lastJumpTime + jumpCooldown)
         {
-            rb.linearVelocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
-        } 
-        else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
-        {
-            rb.linearVelocity += Vector3.up * Physics.gravity.y * (ascendMultiplier - 1) * Time.fixedDeltaTime;
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundLayer);
         }
     }
     
+    // Metoda wywoływana z InventorySystem przy zmianie broni na dłoń i odwrotnie
+    public void SetEmptyHandBonus(bool active)
+    {
+        hasEmptyHandBonus = active;
+    }
+
 }

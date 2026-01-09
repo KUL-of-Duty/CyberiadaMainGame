@@ -2,58 +2,33 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    //podstawowe zmienne zdrowia
     public int maxHealth = 100;
     private int currentHealth;
     
-   //nawiązanie do HpBar
-    public HpBar healthBar;
+    public HpBar healthBar; // Przeciągnij tutaj obiekt z HpBar.cs
     
-    //ustawienia obrażeń
-    public string damageTag = "Enemy"; 
+    public string damageTag = "Enemy"; // Obiekty z tym tagiem zadają obrażenia
     public int damageAmount = 20;
 
     void Start()
     {
         currentHealth = maxHealth;
-        
-        if (healthBar != null)
-        {
-            healthBar.SetMaxHealth(maxHealth);
-        }
+        if (healthBar != null) healthBar.SetMaxHealth(maxHealth);
     }
 
-    // Metoda wywołująca spadek HP i aktualizację UI
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        
-        // Aktualizacja Slidera (Paska HP)
-        if (healthBar != null)
-        {
-            healthBar.SetHealth(currentHealth); //wartość Slidera
-        }
+        if (healthBar != null) healthBar.SetHealth(currentHealth);
 
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) Die();
     }
     
-    // kolizja z obiektem zadającym obrażenia
     private void OnCollisionEnter(Collision collision)
     {
-        // Sprawdza, czy dotknięty obiekt ma zdefiniowany tag
-        if (collision.gameObject.CompareTag(damageTag))
-        {
-            // Natychmiastowe zabranie obrażeń i spadek wartości hp
-            TakeDamage(damageAmount);
-             
-        }
+        // Jeśli dotknie nas coś z tagiem "Enemy", otrzymujemy obrażenia
+        if (collision.gameObject.CompareTag(damageTag)) TakeDamage(damageAmount);
     }
 
-    void Die()
-    {
-        Debug.Log("nie chciałbym cię martwić ale już jesteś martwy");
-    }
+    void Die() => Debug.Log("nie chciałbym cię martwić ale już jesteś martwy");
 }
