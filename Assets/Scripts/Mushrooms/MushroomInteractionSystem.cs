@@ -1,12 +1,20 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using Unity.Netcode;
 
-public class MushroomInteractionSystem : MonoBehaviour
+public class MushroomInteractionSystem : NetworkBehaviour
 {
     [SerializeField]
     Mushroom mushroomType;
     [SerializeField]
     GameObject interactionbutton;
+    void Awake() 
+    {
+        if(!IsOwner){
+            gameObject.SetActive(false);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         ShowInteraction();
