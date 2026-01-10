@@ -440,6 +440,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: M_Player_TP
       objectReference: {fileID: 0}
+    - target: {fileID: 5201058687634663984, guid: 4eb24fbab941b31438f9fef9dd4c8920, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.00000002980234
+      objectReference: {fileID: 0}
+    - target: {fileID: 5201058687634663984, guid: 4eb24fbab941b31438f9fef9dd4c8920, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.934717
+      objectReference: {fileID: 0}
+    - target: {fileID: 5201058687634663984, guid: 4eb24fbab941b31438f9fef9dd4c8920, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.00000048167243
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -561,6 +573,8 @@ PlayableDirector:
   - key: {fileID: 7885201408838475706, guid: 3ad68686a8c0e1843a90c8fef892d84c, type: 2}
     value: {fileID: 312132247}
   - key: {fileID: 4805037304788708384, guid: 3ad68686a8c0e1843a90c8fef892d84c, type: 2}
+    value: {fileID: 312132247}
+  - key: {fileID: 3799102535969427905, guid: 3ad68686a8c0e1843a90c8fef892d84c, type: 2}
     value: {fileID: 312132247}
   m_ExposedReferences:
     m_References: []
