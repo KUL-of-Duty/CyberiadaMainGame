@@ -1,3 +1,4 @@
+using System;
 using Unity.Cinemachine;
 // using Unity.Entities.UniversalDelegates;
 using Unity.Netcode;
@@ -18,7 +19,7 @@ public class gunScript : NetworkBehaviour
     InputAction reloadAction;
     ParticleSystem particleSystem;
     bool isBurstActive = false;
-    int burstShotsLeft = 0;
+    int burstShotsLeft;
     float nextBurstShotTime = 0f;
 
 
@@ -31,7 +32,8 @@ public class gunScript : NetworkBehaviour
         playerInput = GetComponent<PlayerInput>();
         shootAction = playerInput.actions.FindAction("Attack");
         reloadAction = playerInput.actions.FindAction("Reload");
-        particleSystem = GetComponent<ParticleSystem>();
+        particleSystem = GetComponentInChildren<ParticleSystem>();
+        burstShotsLeft=gunObjectScript.burstBullets;
         lastAttackTime=Time.time;
         lastReloadTime=Time.time;
         shootAction.Enable();
@@ -41,53 +43,56 @@ public class gunScript : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         ammo = GetComponentInParent<PlayerAmmo>();
+        Debug.Log("Ammo amount: "+ammo.Ammo.Value);
     }
     void Update(){
     if(!IsClient || !IsOwner) return;
         // --- START ATTACK ---
-        if (shootAction.IsPressed()){
+    if (shootAction.IsPressed()){
         OnAttackPressed(); // ustawia isBurstActive i burstShotsLeft jeśli BURST
-        Debug.Log("Attack");
-        particleSystem.Play();
+        //particleSystem.Play();
     }
 
     // --- RELOAD ---
     if(reloadAction.WasPressedThisFrame()){
         ReloadGun();
-        Debug.Log("Reload");
+        Debug.Log("Reload, ammo: "+ ammo.Ammo.Value);
     }
 
     // --- BURST STATE MACHINE ---
+    Debug.Log(isBurstActive+" "+burstShotsLeft+" "+ammo.Ammo.Value);
     if(isBurstActive){
-        if (burstShotsLeft <= 0 || gunObjectScript.ammo <= 0){
+        if (burstShotsLeft <= 0 || ammo.Ammo.Value <= 0){
             isBurstActive = false;
         } else if (Time.time >= nextBurstShotTime){
+            Debug.Log("dziala");
             TryShoot();
             burstShotsLeft--;
             nextBurstShotTime = Time.time + gunObjectScript.burstInterval;
         }
     }
+
 }
 
     
     void Attack()
     {
-        //Debug.Log($"Atak na {NetworkObjectId}");
+        Debug.Log($"Atak na {NetworkObjectId}");
+        if(!(gunObjectScript.WeaponType==TypeOfWeapon.MELEE))
+            ConsumeAmmoServerRpc(1);
         RaycastHit hit;
         if(Physics.Raycast(fpsCam.transform.position,fpsCam.transform.forward, out hit, gunObjectScript.range))
         {
             Debug.DrawRay(fpsCam.transform.position, fpsCam.transform.forward * gunObjectScript.range, Color.white,0.5f, true);
-            // Debug.Log(hit.transform.name);
+            Debug.Log(hit.transform.name);
             // Debug.Log(gunObjectScript.ammo);
             Target target = hit.transform.GetComponent<Target>();
-            Debug.Log(target);
+            //Debug.Log(target);
             if(target==null) return;
             ulong id = target.NetworkObjectId;
-            
             ReportHit(id, gunObjectScript.damage);
         }
         lastAttackTime = Time.time;
-        
     }
     void OnAttackPressed(){
             
@@ -101,9 +106,11 @@ public class gunScript : NetworkBehaviour
             {
                 if (!isBurstActive && Time.time > lastAttackTime + gunObjectScript.attackInterval)
                 {
+                    Debug.Log("Burst ");
                     isBurstActive = true;
                     burstShotsLeft = gunObjectScript.burstBullets;
-                    nextBurstShotTime = Time.time;
+                    nextBurstShotTime = Time.time+ gunObjectScript.attackInterval;
+                    Debug.Log(isBurstActive+" "+burstShotsLeft+" "+nextBurstShotTime);
                 }
             }
             else if (gunObjectScript.WeaponType==TypeOfWeapon.AUTO_FIRE){
@@ -127,16 +134,15 @@ public class gunScript : NetworkBehaviour
             Attack();
         }
         else if(ammo!=null&&ammo.Ammo.Value>0){
-            ammo.ConsumeAmmoServerRpc(1);
-            Attack();
+            Attack();           
         }
     }
     [ServerRpc]
     void ReloadGunServerRpc(){
-        //if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
+        if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
             Debug.Log($"Reload na {NetworkObjectId}");
             ammo.Ammo.Value=gunObjectScript.maxAmmo;
-        //}
+        }
     }
     [ServerRpc]
     void ShootServerRpc(ServerRpcParams rpc = default){
@@ -145,7 +151,7 @@ public class gunScript : NetworkBehaviour
     }
     [ServerRpc(RequireOwnership = false)]
     void ReportHitServerRpc(ulong objectId,float damage){
-        Debug.Log("ReportHitServerRpc");
+        //Debug.Log("ReportHitServerRpc");
         Debug.Log(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId,out var o));
         if(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject obj)) return;
         Target target = obj.GetComponent<Target>();
@@ -155,16 +161,26 @@ public class gunScript : NetworkBehaviour
     }
 
     void ReloadGun(){
-        //if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
-            Debug.Log($"Reload na {NetworkObjectId}");
+        if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
+            //Debug.Log($"Reload na {NetworkObjectId}");
             ammo.Ammo.Value=gunObjectScript.maxAmmo;
             ReloadGunServerRpc();
-        //}
+            Debug.Log("Reloaded, ammo: "+ammo.Ammo.Value);
+        }
     }
 
     void ReportHit(ulong objectId,float damage){
         Debug.Log("ReportHit");
         Debug.Log(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId,out var o));
         ReportHitServerRpc(objectId,damage);
+    }
+
+    [ServerRpc]
+    public void ConsumeAmmoServerRpc(int amount){
+        Debug.Log("Consume ammo Server RPC"); 
+        if(ammo.Ammo.Value>=amount){
+            ammo.Ammo.Value-=amount;
+            Debug.Log("Ammo consumption"+ammo.Ammo.Value);   
+        }
     }
 }
