@@ -554,6 +554,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AK47
       objectReference: {fileID: 0}
+    - target: {fileID: 7771261525681758859, guid: 2b74aa2d8de549546bfe8db7ed1c1c92, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8561101760390235599, guid: 2b74aa2d8de549546bfe8db7ed1c1c92, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.18683
@@ -981,7 +985,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6923435132219452036, guid: 93c1d2c80b8d90e40a07632b54d2bc2a, type: 3}
       propertyPath: m_Name
-      value: Pistol (1)
+      value: Pistol
+      objectReference: {fileID: 0}
+    - target: {fileID: 6923435132219452036, guid: 93c1d2c80b8d90e40a07632b54d2bc2a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
