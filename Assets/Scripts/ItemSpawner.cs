@@ -33,7 +33,7 @@ public class ItemSpawner : MonoBehaviour
         itemID = itemManager.SpawnedItemsList.Count - 1;
         modelIndex = GunSO.weaponIndex;
 
-        ItemList.SpawnItemRPC(modelIndex, transform.position);
+      //  ItemList.SpawnItemRPC(modelIndex, transform.position);
     }
 
     public void WeaponDespawned()
