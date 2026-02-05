@@ -21,6 +21,8 @@ public class PlayerMovement : NetworkBehaviour
     private float _speed = 3f;
     [SerializeField]
     private float _sprintSpeed = 1.8f;
+    private bool _emptyHandBonus = true;
+    private float _emptyHandSpeed = 1.2f;
 
     [Space]
 
@@ -46,7 +48,7 @@ public class PlayerMovement : NetworkBehaviour
     private float _jumpForce = 15f;
     private float _jumpVelocity = 0f;
     [SerializeField]
-    private float _heightBounds = 20f;
+    private float _heightBounds = 21f;
 
     public Vector3 MoveVector { get; private set; }
     public Vector3 RotateVector { get; private set; }
@@ -125,7 +127,15 @@ public class PlayerMovement : NetworkBehaviour
         if (Input.GetKey(KeyCode.LeftShift) && _isGrounded)
         {
             return _sprintSpeed;
+        } else if (_emptyHandBonus)
+        {
+            return _emptyHandSpeed;
         }
         return 1.0f;
+    }
+
+    public void SetEmptyHandBonus(bool boolean)
+    {
+        _emptyHandBonus = boolean;
     }
 }

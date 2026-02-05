@@ -9,10 +9,19 @@ public class InventorySystem : MonoBehaviour
     public HotbarUI hotbarUI;           
 
     // Tablica 4 slotów na bronie (0: Rifle, 1: Pistol, 2: Melee, 3: Utility)
-    private PhysicalWeapon[] slots = new PhysicalWeapon[4]; 
-    private int currentSlotIndex = 4; // Indeks 4 oznacza "puste ręce"
+    public GunObjectScript[] slots = new GunObjectScript[5];
+    private GunObjectScript currentGun;
+    [SerializeField] GameObject[] AllGuns;
+    [SerializeField] GameObject ItemSpawnerPrefab;
+    private int currentSlotIndex; // Indeks 4 oznacza "puste ręce"
 
     private PlayerMovement movement;
+    ItemList itemManager;
+
+    private void Awake()
+    {
+        itemManager = FindAnyObjectByType<ItemList>();
+    }
 
     void Start()
     {
@@ -24,7 +33,7 @@ public class InventorySystem : MonoBehaviour
     {
         HandleInput(); // Obsługa klawiszy i scrolla
     }
-
+     
     void HandleInput()
     {
         // Wybór klawiszami 1-5
@@ -46,7 +55,7 @@ public class InventorySystem : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.E)) TryPickUp();
-        if (Input.GetKeyDown(KeyCode.G)) DropCurrentItem();
+        if (Input.GetKeyDown(KeyCode.G)) DropSlot(currentSlotIndex);
     }
 
     void TryPickUp()
@@ -55,57 +64,58 @@ public class InventorySystem : MonoBehaviour
         // Raycast ignoruje gracza, szuka broni w zasięgu 3.5m
         if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 3.5f, ~LayerMask.GetMask("Player")))
         {
-            PhysicalWeapon weapon = hit.collider.GetComponent<PhysicalWeapon>();
-            if (weapon != null)
+            if (!hit.collider.gameObject.CompareTag("Item")) return;
+            GunObjectScript weapon = hit.collider.gameObject.GetComponentInParent<ItemSpawner>().GunSO;
+            // Konwertuje nazwę z Enum na numer indeksu (np. Pistol -> 1)
+            int targetSlot = (int)weapon.weaponType; 
+
+            // --- MAKS --- Wprowadziłem wymiane konkretnego slota, na ten który chcemy wziąść
+            if (slots[targetSlot] != null)
             {
-                // Konwertuje nazwę z Enum na numer indeksu (np. Pistol -> 1)
-                int targetSlot = (int)weapon.weaponType; 
-
-                if (slots[targetSlot] != null) return; // Jeśli slot zajęty, nic nie rób
-
-                slots[targetSlot] = weapon;
-                weapon.transform.SetParent(weaponSocket);
-                weapon.transform.localPosition = Vector3.zero;
-                weapon.transform.localRotation = Quaternion.identity;
-                weapon.SetPhysics(false); // Wyłącza fizykę podniesionej broni
-
                 EquipSlot(targetSlot);
+                DropSlot(targetSlot);
             }
+            hit.collider.gameObject.GetComponentInParent<ItemSpawner>().WeaponDespawned();
+            slots[targetSlot] = weapon;
+            EquipSlot(targetSlot);
         }
     }
 
     public void EquipSlot(int index)
     {
+        // --- MAKS --- Wymieniłem chowanie każdego obieku, na chowanie aktualnie trzymanego
+        if(currentSlotIndex == index || slots[index] == null) return;
+        if (currentGun != null) AllGuns[currentGun.weaponIndex].SetActive(false);
+        currentGun = slots[index];
         currentSlotIndex = index;
-        // Ukryj wszystkie modele broni
-        for (int i = 0; i < 4; i++) if (slots[i] != null) slots[i].gameObject.SetActive(false);
-
         // Jeśli wybrano slot z bronią, pokaż model i wyłącz bonus prędkości
-        if (index < 4 && slots[index] != null)
+        if (index < 4)
         {
-            slots[index].gameObject.SetActive(true);
+            AllGuns[currentGun.weaponIndex].SetActive(true);
             movement.SetEmptyHandBonus(false);
         }
         else
         {
-            // Jeśli wybrano pusty slot lub klawisz 5, aktywuj bonus dłoni
+            AllGuns[currentGun.weaponIndex].SetActive(true);
             movement.SetEmptyHandBonus(true);
-            currentSlotIndex = 4;
         }
 
         // Powiadom skrypt UI o zmianie
         if (hotbarUI != null) hotbarUI.UpdateUI(currentSlotIndex, slots);
     }
 
-    void DropCurrentItem()
+    void DropSlot(int index)
     {
+        if (currentSlotIndex == 4) return;
+
         if (currentSlotIndex < 4 && slots[currentSlotIndex] != null)
         {
-            PhysicalWeapon w = slots[currentSlotIndex];
-            w.transform.SetParent(null);
-            w.SetPhysics(true); // Włącza fizykę z powrotem
-            if(w.rb != null) w.rb.AddForce(cameraTransform.forward * 5f, ForceMode.Impulse);
-            slots[currentSlotIndex] = null;
+            var spawner = Instantiate(ItemSpawnerPrefab, transform.position, Quaternion.identity);
+            var itemSpawner = spawner.GetComponent<ItemSpawner>();
+            itemSpawner.GunSO = currentGun;
+            itemSpawner.SpawnAfterStart();
+            currentGun = null;
+            slots[index] = null;
             EquipSlot(4); // Wróć do dłoni po wyrzuceniu
         }
     }

@@ -6,7 +6,7 @@ public class PlayerAmmo : NetworkBehaviour {
 
     public override void OnNetworkSpawn()
     {
-        Ammo = new NetworkVariable<int>(GetComponentInChildren<gunScript>().gunObjectScript.ammo,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
+        Ammo = new NetworkVariable<int>(GetComponentInChildren<GunScript>().gunObjectScript.ammo,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
         if(!IsOwner){
             Ammo.OnValueChanged+=(oldValue, newValue)=>{
 

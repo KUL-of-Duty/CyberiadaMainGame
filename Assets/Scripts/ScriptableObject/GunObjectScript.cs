@@ -7,7 +7,7 @@ public class GunObjectScript : ScriptableObject
     public float damage = 10f; // obrażenia
     public float range = 100f; // zasięg
     public float attackInterval= 0.34f; // czas między atakami
-    public TypeOfWeapon WeaponType;
+    public FireMode WeaponType;
     // public bool singleShot= true; // pojedynczy strzał
     // public bool autoFire = false; // ogień automatyczny (przytrzymanie)
     // public bool melee = false; // walka wręcz
@@ -17,9 +17,15 @@ public class GunObjectScript : ScriptableObject
     public float reloadTime=2.35f;
     public int burstBullets=3;
     public float burstInterval = 0.125f;
+    public WeaponType weaponType;
+    public Sprite weaponIcon;
+    public GameObject weaponModel;
+    public int weaponIndex;
 }
 
-public enum TypeOfWeapon
+public enum FireMode
 {
     SINGLE_SHOT, AUTO_FIRE, MELEE, BURST_FIRE
 }
+
+public enum WeaponType { Rifle, Pistol, Melee, Utility }

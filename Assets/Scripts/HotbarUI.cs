@@ -5,15 +5,15 @@ public class HotbarUI : MonoBehaviour
 {
     [Header("Referencje UI")]
     // Przeciągnij tutaj obrazy tła 5 slotów (4 bronie + 1 dłoń)
-    public Image[] slotBackgrounds; 
+    public Image[] slotBackgrounds;
     // Przeciągnij tutaj obrazy ikon dla 4 slotów broni
-    public Image[] slotIcons;       
+    public Image[] slotIcons;
 
     [Header("Kolory")]
     public Color activeColor = Color.white; // Kolor wybranego slotu
     public Color inactiveColor = new Color(0.2f, 0.2f, 0.2f, 0.5f); // Kolor nieaktywnych
 
-    public void UpdateUI(int activeIndex, PhysicalWeapon[] inventorySlots)
+    public void UpdateUI(int activeIndex, GunObjectScript[] inventorySlots)
     {
         // 1. Pętla zmienia kolor tła każdego slotu
         for (int i = 0; i < slotBackgrounds.Length; i++)
