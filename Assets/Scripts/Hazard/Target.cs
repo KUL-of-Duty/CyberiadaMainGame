@@ -1,18 +1,26 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class Target : NetworkBehaviour
-{
-    public NetworkVariable<float> health;
+public class Target : NetworkBehaviour{
+    public float maxHealth = 100;
+    public NetworkVariable<float> health=new NetworkVariable<float>(10,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
     float dieTime;
-    public override void OnNetworkSpawn()
-    {
-         health = new NetworkVariable<float>(20,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
+
+    public override void OnNetworkSpawn(){
+         if(IsServer) health.Value = maxHealth;
+         health.OnValueChanged += OnHealthChanged;
     }
-    public void TakeDamage(float amount)
-    {
-        if(!IsServer) return;
-        Debug.Log("hit");
+    public void TakeDamage(float amount){
+        TakeDamageServerRpc(amount);
+    }
+
+    void Die(){
+        dieTime = Time.time;
+        NetworkObject.Despawn();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void TakeDamageServerRpc(float amount){
         health.Value-=amount;
         if (health.Value <= 0)
         {
@@ -20,22 +28,7 @@ public class Target : NetworkBehaviour
         }
     }
 
-    void Die()
-    {
-        dieTime = Time.time;
-        NetworkObject.Despawn();
+    void OnHealthChanged(float oldValue, float newValue){
+        Debug.Log("HP updated: " + newValue);
     }
-
-
-    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
-    // public void TakeDamageServerRpc(float amount)
-    // {
-    //     TakeDamage(amount);
-    // }
-
-    // [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
-    // void DieServerRpc()
-    // {
-    //     Die();
-    // }
 }

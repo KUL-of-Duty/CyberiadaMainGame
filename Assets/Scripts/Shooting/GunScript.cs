@@ -5,8 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class gunScript : NetworkBehaviour
-{
+public class GunScript : NetworkBehaviour{
     public GunObjectScript gunObjectScript;
     private bool isAttacking = false;
     private float lastAttackTime;
@@ -21,14 +20,7 @@ public class gunScript : NetworkBehaviour
     bool isBurstActive = false;
     int burstShotsLeft;
     float nextBurstShotTime = 0f;
-
-
-    void Start()
-    {
-        Debug.Log($"[GunScript Start] NetworkObjectId={NetworkObjectId} IsOwner={IsOwner} IsServer={IsServer} IsClient={IsClient} IsLocalPlayer={IsLocalPlayer}");
-    }
-    void Awake()
-    {
+    void Awake(){
         playerInput = GetComponent<PlayerInput>();
         shootAction = playerInput.actions.FindAction("Attack");
         reloadAction = playerInput.actions.FindAction("Reload");
@@ -39,148 +31,97 @@ public class gunScript : NetworkBehaviour
         shootAction.Enable();
         reloadAction.Enable();
     }
-
-    public override void OnNetworkSpawn()
-    {
+    public override void OnNetworkSpawn(){
         ammo = GetComponentInParent<PlayerAmmo>();
-        Debug.Log("Ammo amount: "+ammo.Ammo.Value);
     }
     void Update(){
-    if(!IsClient || !IsOwner) return;
-        // --- START ATTACK ---
-    if (shootAction.IsPressed()){
-        OnAttackPressed(); // ustawia isBurstActive i burstShotsLeft jeśli BURST
-        //particleSystem.Play();
-    }
-
-    // --- RELOAD ---
-    if(reloadAction.WasPressedThisFrame()){
-        ReloadGun();
-        Debug.Log("Reload, ammo: "+ ammo.Ammo.Value);
-    }
-
-    // --- BURST STATE MACHINE ---
-    Debug.Log(isBurstActive+" "+burstShotsLeft+" "+ammo.Ammo.Value);
-    if(isBurstActive){
-        if (burstShotsLeft <= 0 || ammo.Ammo.Value <= 0){
-            isBurstActive = false;
-        } else if (Time.time >= nextBurstShotTime){
-            Debug.Log("dziala");
-            TryShoot();
-            burstShotsLeft--;
-            nextBurstShotTime = Time.time + gunObjectScript.burstInterval;
+        if(!IsClient || !IsOwner) return;
+        if (shootAction.IsPressed()){
+            OnAttackPressed();
+            //particleSystem.Play();
+        }
+        if(reloadAction.WasPressedThisFrame()){
+            ReloadGun();
+        }
+        // --- BURST STATE MACHINE ---
+        if(isBurstActive){
+            if (burstShotsLeft <= 0 || ammo.Ammo.Value <= 0){
+                isBurstActive = false;
+            } else if (Time.time >= nextBurstShotTime){
+                TryShoot();
+                burstShotsLeft--;
+                nextBurstShotTime = Time.time + gunObjectScript.burstInterval;
+            }
         }
     }
-
-}
-
-    
-    void Attack()
-    {
-        Debug.Log($"Atak na {NetworkObjectId}");
+    void Attack(){
         if(!(gunObjectScript.WeaponType==TypeOfWeapon.MELEE))
-            ConsumeAmmoServerRpc(1);
+            ammo.ConsumeAmmoServerRpc(1);
         RaycastHit hit;
-        if(Physics.Raycast(fpsCam.transform.position,fpsCam.transform.forward, out hit, gunObjectScript.range))
-        {
+        if(Physics.Raycast(fpsCam.transform.position,fpsCam.transform.forward, out hit, gunObjectScript.range)){
             Debug.DrawRay(fpsCam.transform.position, fpsCam.transform.forward * gunObjectScript.range, Color.white,0.5f, true);
-            Debug.Log(hit.transform.name);
-            // Debug.Log(gunObjectScript.ammo);
+            if(hit.transform.GetComponent<Target>() == null) return;
             Target target = hit.transform.GetComponent<Target>();
-            //Debug.Log(target);
-            if(target==null) return;
             ulong id = target.NetworkObjectId;
             ReportHit(id, gunObjectScript.damage);
         }
         lastAttackTime = Time.time;
     }
-    void OnAttackPressed(){
-            
-            if (shootAction.WasPressedThisFrame()&&gunObjectScript.WeaponType==TypeOfWeapon.SINGLE_SHOT){
-                if(Time.time>lastAttackTime+gunObjectScript.attackInterval)
-                {
-                    TryShoot();
-                }
+    void OnAttackPressed(){ 
+        if(isReloading||ammo.GetAmmo()==0) return;
+        if (shootAction.WasPressedThisFrame()&&gunObjectScript.isSingleShot()){
+            if(Time.time>lastAttackTime+gunObjectScript.attackInterval){
+                TryShoot();
             }
-            else if (shootAction.WasPressedThisFrame()&&gunObjectScript.WeaponType == TypeOfWeapon.BURST_FIRE)
-            {
-                if (!isBurstActive && Time.time > lastAttackTime + gunObjectScript.attackInterval)
-                {
-                    Debug.Log("Burst ");
-                    isBurstActive = true;
-                    burstShotsLeft = gunObjectScript.burstBullets;
-                    nextBurstShotTime = Time.time+ gunObjectScript.attackInterval;
-                    Debug.Log(isBurstActive+" "+burstShotsLeft+" "+nextBurstShotTime);
-                }
+        }
+        else if (shootAction.WasPressedThisFrame()&&gunObjectScript.isBurstFire()){
+            if (!isBurstActive && Time.time > lastAttackTime + gunObjectScript.attackInterval){
+                isBurstActive = true;
+                burstShotsLeft = gunObjectScript.burstBullets;
+                nextBurstShotTime = Time.time+ gunObjectScript.attackInterval;
+                Debug.Log(isBurstActive+" "+burstShotsLeft+" "+nextBurstShotTime);
             }
-            else if (gunObjectScript.WeaponType==TypeOfWeapon.AUTO_FIRE){
-                if (Time.time>lastAttackTime+gunObjectScript.attackInterval)
-                {
-                    TryShoot();
-                }
+        }
+        else if (shootAction.IsPressed()&&gunObjectScript.isAutoFire()){
+            if (Time.time>lastAttackTime+gunObjectScript.attackInterval){
+                Debug.Log("Autofire");
+                TryShoot();
             }
-            else if (gunObjectScript.WeaponType==TypeOfWeapon.MELEE){
-                if(Time.time>lastAttackTime+gunObjectScript.attackInterval){
-                    TryShoot();
-                    }
+        }
+        else if (shootAction.IsPressed()&&gunObjectScript.isMelee()){
+            if(Time.time>lastAttackTime+gunObjectScript.attackInterval){
+                Debug.Log("Melee");
+                TryShoot();
             }
-            
+        }
     }
     void TryShoot(){
         if(!IsOwner) return;
-        Debug.Log("Player: "+NetworkObjectId+" Ammo: "+ammo.Ammo.Value);
-        if (gunObjectScript.WeaponType != TypeOfWeapon.MELEE)
-        {
+        if (gunObjectScript.WeaponType == TypeOfWeapon.MELEE){
             Attack();
         }
-        else if(ammo!=null&&ammo.Ammo.Value>0){
+        else if(ammo!=null&&ammo.GetAmmo()>0){
             Attack();           
         }
     }
     [ServerRpc]
     void ReloadGunServerRpc(){
-        if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
-            Debug.Log($"Reload na {NetworkObjectId}");
-            ammo.Ammo.Value=gunObjectScript.maxAmmo;
-        }
-    }
-    [ServerRpc]
-    void ShootServerRpc(ServerRpcParams rpc = default){
-        Debug.Log("ShootServerrpc");
-        Attack();
+        ammo.Ammo.Value=gunObjectScript.maxAmmo;
     }
     [ServerRpc(RequireOwnership = false)]
     void ReportHitServerRpc(ulong objectId,float damage){
-        //Debug.Log("ReportHitServerRpc");
-        Debug.Log(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId,out var o));
         if(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject obj)) return;
         Target target = obj.GetComponent<Target>();
-         Debug.Log(target);
         if(target!=null)
             target.TakeDamage(damage);
     }
-
     void ReloadGun(){
         if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
-            //Debug.Log($"Reload na {NetworkObjectId}");
-            ammo.Ammo.Value=gunObjectScript.maxAmmo;
+            lastReloadTime = Time.time;
             ReloadGunServerRpc();
-            Debug.Log("Reloaded, ammo: "+ammo.Ammo.Value);
         }
     }
-
     void ReportHit(ulong objectId,float damage){
-        Debug.Log("ReportHit");
-        Debug.Log(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId,out var o));
         ReportHitServerRpc(objectId,damage);
-    }
-
-    [ServerRpc]
-    public void ConsumeAmmoServerRpc(int amount){
-        Debug.Log("Consume ammo Server RPC"); 
-        if(ammo.Ammo.Value>=amount){
-            ammo.Ammo.Value-=amount;
-            Debug.Log("Ammo consumption"+ammo.Ammo.Value);   
-        }
     }
 }

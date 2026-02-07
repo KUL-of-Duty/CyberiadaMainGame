@@ -2,30 +2,24 @@ using UnityEngine;
 using Unity.Netcode;
 
 public class PlayerAmmo : NetworkBehaviour {
-    public NetworkVariable<int> Ammo;
-
-    public override void OnNetworkSpawn()
-    {
-        Ammo = new NetworkVariable<int>(GetComponent<gunScript>().gunObjectScript.ammo,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
+    public NetworkVariable<int> Ammo = new NetworkVariable<int>(1,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
+    public override void OnNetworkSpawn(){
+        Ammo.Value = GetComponent<GunScript>().gunObjectScript.ammo;
         if(!IsOwner){
-            Ammo.OnValueChanged+=(oldValue, newValue)=>{
-
-                Debug.Log("Ammo: "+newValue);
-            };
+            Ammo.OnValueChanged+=OnAmmoChanged;
         }
     }
-
-    // [ServerRpc]
-    // public void ConsumeAmmoServerRpc(int amount){
-    //     if(Ammo.Value>=amount){
-    //         Ammo.Value-=amount;
-    //         Debug.Log("Ammo consumption");   
-    //     }
-    // }
-    public int GetAmmo()
-    {
-        Debug.Log("It should return actual amount of ammo");
+    [ServerRpc]
+    public void ConsumeAmmoServerRpc(int amount){
+        if(GetAmmo()>=amount){
+            Ammo.Value-=amount;
+        }
+    }
+    public int GetAmmo(){
         return Ammo.Value;
+    }
+    void OnAmmoChanged(int oldValue, int newValue){
+        Debug.Log("New Ammo Value: "+newValue);
     }
 
 }
