@@ -5,9 +5,8 @@ public class Health : MonoBehaviour
     public int maxHealth = 100;
     private int currentHealth;
     
-    public HpBar healthBar; // Przeciągnij tutaj obiekt z HpBar.cs
-    
-    public string damageTag = "Enemy"; // Obiekty z tym tagiem zadają obrażenia
+    public HpBar healthBar; 
+    public string damageTag = "Enemy"; 
     public int damageAmount = 20;
 
     void Start()
@@ -19,16 +18,25 @@ public class Health : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        if (healthBar != null) healthBar.SetHealth(currentHealth);
+        
+        // Odtwarzamy dźwięk przy otrzymaniu obrażeń
+        SoundManager.PlaySound(SoundType.TAKINGDAMAGE);
 
+        if (healthBar != null) healthBar.SetHealth(currentHealth);
         if (currentHealth <= 0) Die();
     }
     
     private void OnCollisionEnter(Collision collision)
     {
-        // Jeśli dotknie nas coś z tagiem "Enemy", otrzymujemy obrażenia
-        if (collision.gameObject.CompareTag(damageTag)) TakeDamage(damageAmount);
+        if (collision.gameObject.CompareTag(damageTag)) 
+        {
+            TakeDamage(damageAmount);
+        }
     }
 
-    void Die() => Debug.Log("nie chciałbym cię martwić ale już jesteś martwy");
+    void Die() 
+    {
+        Debug.Log("Nie chciałbym cię martwić, ale już jesteś martwy");
+        // Tu można dodać SoundManager.PlaySound(jakiś_dźwięk_śmierci);
+    }
 }
