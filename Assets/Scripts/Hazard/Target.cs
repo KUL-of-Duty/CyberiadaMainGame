@@ -4,12 +4,17 @@ using UnityEngine;
 public class Target : NetworkBehaviour{
     public float maxHealth = 100;
     public NetworkVariable<float> health=new NetworkVariable<float>(10,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
+    public HPBarUI hpBarUI;
     float dieTime;
 
     public override void OnNetworkSpawn(){
          if(IsServer) health.Value = maxHealth;
          health.OnValueChanged += OnHealthChanged;
     }
+    public override void OnNetworkDespawn(){
+        health.OnValueChanged -= OnHealthChanged;
+    }
+    
     public void TakeDamage(float amount){
         TakeDamageServerRpc(amount);
     }
@@ -30,5 +35,7 @@ public class Target : NetworkBehaviour{
 
     void OnHealthChanged(float oldValue, float newValue){
         Debug.Log("HP updated: " + newValue);
+        if (!IsOwner) return;
+        hpBarUI?.OnSetHealth(newValue);
     }
 }

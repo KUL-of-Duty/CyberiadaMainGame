@@ -4,6 +4,7 @@ using UnityEngine;
 public class CigaretteEvents : MonoBehaviour
 {
     PlayerHpSystem playerHpSystem;
+    float regenerationValue = 20;
     void Start()
     {
         playerHpSystem = GetComponentInParent<PlayerHpSystem>();
@@ -11,6 +12,6 @@ public class CigaretteEvents : MonoBehaviour
     public void OnSmokeFinished()
     {
         Debug.Log("Animacja Zakońćzcona");
-        playerHpSystem.HpRegenerationServerRpc(20);
+        playerHpSystem.HpRegenerationServerRpc(regenerationValue);
     }
 }

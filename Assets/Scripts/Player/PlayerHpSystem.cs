@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 public class PlayerHpSystem : NetworkBehaviour
 {
-    Target targetHp;
+    public Target targetHp;
     void Awake()
     {
         targetHp = GetComponent<Target>();

@@ -1,6 +1,5 @@
 using System;
 using Unity.Cinemachine;
-// using Unity.Entities.UniversalDelegates;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,6 +19,7 @@ public class GunScript : NetworkBehaviour{
     bool isBurstActive = false;
     int burstShotsLeft;
     float nextBurstShotTime = 0f;
+    
     void Awake(){
         playerInput = GetComponent<PlayerInput>();
         shootAction = playerInput.actions.FindAction("Attack");
@@ -31,9 +31,11 @@ public class GunScript : NetworkBehaviour{
         shootAction.Enable();
         reloadAction.Enable();
     }
+
     public override void OnNetworkSpawn(){
         ammo = GetComponentInParent<PlayerAmmo>();
     }
+
     void Update(){
         if(!IsClient || !IsOwner) return;
         if (shootAction.IsPressed()){
@@ -54,6 +56,7 @@ public class GunScript : NetworkBehaviour{
             }
         }
     }
+
     void Attack(){
         if(!(gunObjectScript.WeaponType==TypeOfWeapon.MELEE))
             ammo.ConsumeAmmoServerRpc(1);
@@ -67,6 +70,7 @@ public class GunScript : NetworkBehaviour{
         }
         lastAttackTime = Time.time;
     }
+
     void OnAttackPressed(){ 
         if(isReloading||ammo.GetAmmo()==0) return;
         if (shootAction.WasPressedThisFrame()&&gunObjectScript.isSingleShot()){
@@ -95,6 +99,7 @@ public class GunScript : NetworkBehaviour{
             }
         }
     }
+
     void TryShoot(){
         if(!IsOwner) return;
         if (gunObjectScript.WeaponType == TypeOfWeapon.MELEE){
@@ -104,10 +109,12 @@ public class GunScript : NetworkBehaviour{
             Attack();           
         }
     }
+
     [ServerRpc]
     void ReloadGunServerRpc(){
         ammo.Ammo.Value=gunObjectScript.maxAmmo;
     }
+
     [ServerRpc(RequireOwnership = false)]
     void ReportHitServerRpc(ulong objectId,float damage){
         if(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject obj)) return;
@@ -115,12 +122,14 @@ public class GunScript : NetworkBehaviour{
         if(target!=null)
             target.TakeDamage(damage);
     }
+
     void ReloadGun(){
         if (Time.time > gunObjectScript.reloadTime + lastReloadTime){
             lastReloadTime = Time.time;
             ReloadGunServerRpc();
         }
     }
+
     void ReportHit(ulong objectId,float damage){
         ReportHitServerRpc(objectId,damage);
     }
