@@ -10,17 +10,10 @@ public class HpTagManager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if(!IsClient) return;
-        hpBarTag.text = NetworkObjectId.ToString()+": "+playerHpSystem.targetHp.health.Value.ToString();
-        Debug.Log(hpBarTag.text);
+        hpBarTag.text = playerHpSystem.targetHp.health.Value.ToString();
         playerHpSystem.targetHp.health.OnValueChanged+=HpBarTagUpdate;
     }
-    // void Awake()
-    // {
-    //     if(!IsClient) return;
-    //     hpBarTag.text = NetworkObjectId.ToString()+": "+playerHpSystem.targetHp.health.Value.ToString();
-    //     Debug.Log(hpBarTag.text);
-    // }
     void HpBarTagUpdate(float oldValue,float newValue){
-        hpBarTag.text = NetworkObjectId.ToString()+": "+playerHpSystem.targetHp.health.Value.ToString();
+        hpBarTag.text = playerHpSystem.targetHp.health.Value.ToString();
     }
 }
