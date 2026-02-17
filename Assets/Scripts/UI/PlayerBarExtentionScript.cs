@@ -68,6 +68,7 @@ public class PlayerBarExtentionScript : NetworkBehaviour
     void BarsExtension(){
         if (extend.IsPressed() && !barsExtended){
             foreach(Canvas c in Players){
+                if(c == null) continue;
                 c.enabled = true;
                 barsExtended = true;
             }
