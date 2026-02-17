@@ -1,6 +1,5 @@
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Scripting;
 using UnityEngine.UI;
 
 public class HPBarUI : NetworkBehaviour

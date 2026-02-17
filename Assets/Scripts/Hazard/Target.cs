@@ -35,7 +35,6 @@ public class Target : NetworkBehaviour{
 
     void OnHealthChanged(float oldValue, float newValue){
         Debug.Log("HP updated: " + newValue);
-        if (!IsOwner) return;
         hpBarUI?.OnSetHealth(newValue);
     }
 }

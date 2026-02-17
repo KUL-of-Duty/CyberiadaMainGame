@@ -1,6 +1,5 @@
 using Unity.Netcode;
 using UnityEngine.UI;
-using UnityEngine;
 
 public class HpTagManager : NetworkBehaviour
 {

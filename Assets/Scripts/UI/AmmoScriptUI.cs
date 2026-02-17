@@ -7,11 +7,12 @@ public class AmmoScript : NetworkBehaviour
     public PlayerAmmo playerAmmo;
     public override void OnNetworkSpawn()
     {
+        if(!IsClient) return;
         ammoAmount.text = playerAmmo.Ammo.Value.ToString();
     }
 
     public void OnAmmoAmountChange(int newValue)
     {
-        ammoAmount.text = newValue.ToString();
+        ammoAmount.text = playerAmmo.Ammo.Value.ToString();
     }
 }
