@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06e95d554e1b6dd4797cfbc0fbab72f3, type: 3}
   m_Name: Pistol
   m_EditorClassIdentifier: Assembly-CSharp::NewScriptableObjectScript
-  damage: 2
+  damage: 40
   range: 100
   attackInterval: 0.39
   WeaponType: 0

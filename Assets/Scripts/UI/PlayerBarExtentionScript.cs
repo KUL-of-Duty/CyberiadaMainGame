@@ -44,16 +44,7 @@ public class PlayerBarExtentionScript : NetworkBehaviour
     void Start()
     {
         if(IsOwner){
-            for(int i=0; i<Players.Count;i++)
-            {
-                RectTransform rt = Players[i].GetComponent<RectTransform>();
-                Players[i].GetComponent<RectTransform>().transform.localPosition = new Vector3(
-                                                        rt.transform.localPosition.x,
-                                                        rt.transform.localPosition.y+rt.rect.height*(1+i),
-                                                        0);
-                Debug.Log("git");
-            }
-            Debug.Log("klei");
+            BarsPositioning();
         }
     }
 
@@ -65,7 +56,26 @@ public class PlayerBarExtentionScript : NetworkBehaviour
         BarsExtension();
     }
 
+    void BarsPositioning(){
+        Debug.Log(PlayerBarUI.GetComponent<RectTransform>().transform.localPosition);
+        Vector3 startVector = PlayerBarUI.GetComponent<RectTransform>().localPosition;
+        for(int i=0; i<Players.Count;i++)
+            {
+                RectTransform rt = Players[i].GetComponent<RectTransform>();
+                Players[i].GetComponent<RectTransform>().transform.localPosition = new Vector3(
+                                                        startVector.x,
+                                                        startVector.y+rt.rect.height*(1+i),
+                                                        0);
+            }
+    }
+
     void BarsExtension(){
+        foreach(Canvas c in Players){
+            if(c == null){
+                Players.Remove(c);
+                BarsPositioning();
+            }
+        }
         if (extend.IsPressed() && !barsExtended){
             foreach(Canvas c in Players){
                 if(c == null) continue;
