@@ -25,19 +25,8 @@ public class ItemSpawner : MonoBehaviour
 
     public void SpawnAfterStart()
     {
-        if(itemManager == null) itemManager = FindAnyObjectByType<ItemList>();
-
-        var weapon = Instantiate(GunSO.weaponModel, transform.position, Quaternion.identity);
+        var weapon = Instantiate(GunSO.weaponModel, transform.position + Vector3.up * 2, Quaternion.identity);
         weapon.transform.SetParent(transform, true);
-        itemManager.SpawnedItemsList.Add(gameObject);
-        itemID = itemManager.SpawnedItemsList.Count - 1;
         modelIndex = GunSO.weaponIndex;
-
-        ItemList.SpawnItemRPC(modelIndex, transform.position);
-    }
-
-    public void WeaponDespawned()
-    {
-        itemManager.DespawnItemRPC(itemID);
     }
 }

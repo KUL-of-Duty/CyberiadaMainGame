@@ -12,6 +12,10 @@ public class PlayerMovement : NetworkBehaviour
     GameObject _groundCheck;
     [SerializeField]
     ClientMovement _clientMovement;
+    [SerializeField]
+    GameObject playerRIG;
+    [SerializeField]
+    GameObject playerHUD;
 
     [Space]
 
@@ -66,7 +70,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
-        if (IsOwner) _playerCamera.gameObject.SetActive(true);
+        if (IsOwner)
+        {
+            _playerCamera.gameObject.SetActive(true);
+            playerHUD.gameObject.SetActive(true);
+            playerRIG.gameObject.SetActive(false);
+        }
     }
 
     void FixedUpdate()

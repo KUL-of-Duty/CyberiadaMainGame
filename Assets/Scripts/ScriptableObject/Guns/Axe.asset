@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06e95d554e1b6dd4797cfbc0fbab72f3, type: 3}
-  m_Name: Pistol
+  m_Name: Axe
   m_EditorClassIdentifier: Assembly-CSharp::NewScriptableObjectScript
   damage: 10
   range: 100
   attackInterval: 0.34
-  WeaponType: 1
+  WeaponType: 0
   ammo: 0
   maxAmmo: 30
   reloadTime: 0.71
   burstBullets: 3
   burstInterval: 0.125
-  weaponType: 0
-  weaponIcon: {fileID: 21300000, guid: 2a0ea2086496b3a4084b02dd53d7990b, type: 3}
-  weaponModel: {fileID: 3676134382013784577, guid: 83c6d57d16ea17344bfc0b8e508c74c2, type: 3}
+  weaponType: 2
+  weaponIcon: {fileID: 21300000, guid: 8d9bb922bf44dff4e81df22d1224ddb9, type: 3}
+  weaponModel: {fileID: 4689101174259351866, guid: ab633e6a3040fa04f80e8d0b9f1a524f, type: 3}
+  weaponIndex: 1

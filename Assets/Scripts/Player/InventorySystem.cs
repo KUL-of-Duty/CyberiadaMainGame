@@ -1,4 +1,6 @@
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem.Utilities;
 
 public class InventorySystem : MonoBehaviour
 {
@@ -11,12 +13,14 @@ public class InventorySystem : MonoBehaviour
     // Tablica 4 slotów na bronie (0: Rifle, 1: Pistol, 2: Melee, 3: Utility)
     public GunObjectScript[] slots = new GunObjectScript[5];
     private GunObjectScript currentGun;
-    [SerializeField] GameObject[] AllGuns;
+    public GameObject[] AllGuns;
     [SerializeField] GameObject ItemSpawnerPrefab;
     private int currentSlotIndex; // Indeks 4 oznacza "puste ręce"
 
     private PlayerMovement movement;
     ItemList itemManager;
+
+    ulong playerID;
 
     private void Awake()
     {
@@ -27,6 +31,8 @@ public class InventorySystem : MonoBehaviour
     {
         movement = GetComponent<PlayerMovement>();
         EquipSlot(4); // Zacznij z pustymi rękami
+
+        playerID = GetComponentInParent<NetworkObject>().OwnerClientId;
     }
 
     void Update()
@@ -62,7 +68,7 @@ public class InventorySystem : MonoBehaviour
     {
         RaycastHit hit;
         // Raycast ignoruje gracza, szuka broni w zasięgu 3.5m
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 3.5f, ~LayerMask.GetMask("Player")))
+        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 5f, ~LayerMask.GetMask("Player")))
         {
             if (!hit.collider.gameObject.CompareTag("Item")) return;
             GunObjectScript weapon = hit.collider.gameObject.GetComponentInParent<ItemSpawner>().GunSO;
@@ -75,7 +81,7 @@ public class InventorySystem : MonoBehaviour
                 EquipSlot(targetSlot);
                 DropSlot(targetSlot);
             }
-            hit.collider.gameObject.GetComponentInParent<ItemSpawner>().WeaponDespawned();
+            itemManager.DespawnItemRPC(hit.collider.gameObject.GetComponentInParent<ItemSpawner>().itemID);
             slots[targetSlot] = weapon;
             EquipSlot(targetSlot);
         }
@@ -85,18 +91,17 @@ public class InventorySystem : MonoBehaviour
     {
         // --- MAKS --- Wymieniłem chowanie każdego obieku, na chowanie aktualnie trzymanego
         if(currentSlotIndex == index || slots[index] == null) return;
-        if (currentGun != null) AllGuns[currentGun.weaponIndex].SetActive(false);
+        if (currentGun != null) itemManager.HideItemRPC(playerID);
         currentGun = slots[index];
         currentSlotIndex = index;
         // Jeśli wybrano slot z bronią, pokaż model i wyłącz bonus prędkości
         if (index < 4)
         {
-            AllGuns[currentGun.weaponIndex].SetActive(true);
+            itemManager.ShowItemRPC(currentGun.weaponIndex, playerID);
             movement.SetEmptyHandBonus(false);
         }
         else
         {
-            AllGuns[currentGun.weaponIndex].SetActive(true);
             movement.SetEmptyHandBonus(true);
         }
 
@@ -110,13 +115,16 @@ public class InventorySystem : MonoBehaviour
 
         if (currentSlotIndex < 4 && slots[currentSlotIndex] != null)
         {
-            var spawner = Instantiate(ItemSpawnerPrefab, transform.position, Quaternion.identity);
-            var itemSpawner = spawner.GetComponent<ItemSpawner>();
-            itemSpawner.GunSO = currentGun;
-            itemSpawner.SpawnAfterStart();
+            itemManager.SpawnItemRPC(currentGun.weaponIndex, transform.position);
+            itemManager.HideItemRPC(playerID);
             currentGun = null;
             slots[index] = null;
             EquipSlot(4); // Wróć do dłoni po wyrzuceniu
         }
+    }
+
+    public int GetGun()
+    {
+        return currentGun.weaponIndex;
     }
 }

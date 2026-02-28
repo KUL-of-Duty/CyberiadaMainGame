@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06e95d554e1b6dd4797cfbc0fbab72f3, type: 3}
-  m_Name: Pistol 1
-  m_EditorClassIdentifier: Assembly-CSharp::NewScriptableObjectScript
+  m_Name: Granade
+  m_EditorClassIdentifier: 
   damage: 10
   range: 100
   attackInterval: 0.34
   WeaponType: 0
-  ammo: 0
+  ammo: 30
   maxAmmo: 30
-  reloadTime: 0.71
+  reloadTime: 2.35
   burstBullets: 3
   burstInterval: 0.125
-  weaponType: 1
-  weaponIcon: {fileID: 21300000, guid: 8038f8718c44db54eba8a4330b574b3b, type: 3}
-  weaponModel: {fileID: 3676134382013784577, guid: 83c6d57d16ea17344bfc0b8e508c74c2, type: 3}
+  weaponType: 3
+  weaponIcon: {fileID: 21300000, guid: f8be392cfdb843642b5e5841b70ec295, type: 3}
+  weaponModel: {fileID: 1732639683849674851, guid: e739e2e7f02b7e548a3f5bfd3af11ca0, type: 3}
+  weaponIndex: 3
