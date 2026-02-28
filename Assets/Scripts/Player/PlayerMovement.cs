@@ -74,7 +74,7 @@ public class PlayerMovement : NetworkBehaviour
         {
             _playerCamera.gameObject.SetActive(true);
             playerHUD.gameObject.SetActive(true);
-            playerRIG.gameObject.SetActive(false);
+            //playerRIG.gameObject.SetActive(false);
         }
     }
 

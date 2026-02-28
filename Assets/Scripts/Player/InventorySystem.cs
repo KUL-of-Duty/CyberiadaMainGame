@@ -91,7 +91,7 @@ public class InventorySystem : MonoBehaviour
     {
         // --- MAKS --- Wymieniłem chowanie każdego obieku, na chowanie aktualnie trzymanego
         if(currentSlotIndex == index || slots[index] == null) return;
-        if (currentGun != null) itemManager.HideItemRPC(playerID);
+        if (currentGun != null) itemManager.HideItemRPC(currentGun.weaponIndex ,playerID);
         currentGun = slots[index];
         currentSlotIndex = index;
         // Jeśli wybrano slot z bronią, pokaż model i wyłącz bonus prędkości
@@ -116,7 +116,7 @@ public class InventorySystem : MonoBehaviour
         if (currentSlotIndex < 4 && slots[currentSlotIndex] != null)
         {
             itemManager.SpawnItemRPC(currentGun.weaponIndex, transform.position);
-            itemManager.HideItemRPC(playerID);
+            itemManager.HideItemRPC(currentGun.weaponIndex, playerID);
             currentGun = null;
             slots[index] = null;
             EquipSlot(4); // Wróć do dłoni po wyrzuceniu

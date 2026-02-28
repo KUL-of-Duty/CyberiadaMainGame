@@ -22,11 +22,10 @@ public class ItemList : NetworkBehaviour
         Instance = this;
     }
     [Rpc(SendTo.Everyone)]
-    public void HideItemRPC(ulong ownerID)
+    public void HideItemRPC(int itemIndex, ulong ownerID)
     {
         NetworkManager.ConnectedClients.TryGetValue(ownerID, out NetworkClient client);
-        var gun = client.PlayerObject.GetComponent<InventorySystem>().GetGun();
-        client.PlayerObject.GetComponent<InventorySystem>().AllGuns[gun].SetActive(false);
+        client.PlayerObject.GetComponent<InventorySystem>().AllGuns[itemIndex].SetActive(false);
     }
 
     [Rpc(SendTo.Everyone)]
