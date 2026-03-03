@@ -1,5 +1,6 @@
 using Unity.Cinemachine;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
@@ -57,11 +58,16 @@ public class PlayerMovement : NetworkBehaviour
     public Vector3 MoveVector { get; private set; }
     public Vector3 RotateVector { get; private set; }
 
+    [SerializeField] private Animator _animator;
+
     void Awake()
     {
         _clientMovement = GetComponent<ClientMovement>();
         _playerCamera = GetComponentInChildren<CinemachineCamera>();
         _playerCamera.gameObject.SetActive(false);
+
+        if (TryGetComponent<NetworkAnimator>(out var netAnim))
+            _animator = netAnim.Animator;
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -96,6 +102,12 @@ public class PlayerMovement : NetworkBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
 
+        if (_animator)
+        {
+            print(move.magnitude > 0);
+            _animator.SetBool("isMoving", move.magnitude > 0);
+        }
+            
         _clientMovement.UpdateMovementServerRPC(move * _speed * Time.deltaTime * Sprint());
     }
 

@@ -277,6 +277,7 @@ MonoBehaviour:
   _groundRadius: 0.5
   _jumpForce: 3
   _heightBounds: 20
+  _animator: {fileID: 0}
 --- !u!143 &3966168018525811613
 CharacterController:
   m_ObjectHideFlags: 0
