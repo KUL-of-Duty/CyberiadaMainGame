@@ -13,9 +13,7 @@ public class PlayerBarExtentionScript : NetworkBehaviour
     bool barsExtended = false;
 
     public override void OnNetworkSpawn(){
-        
-        if (!IsOwner)
-        {   
+        if (!IsOwner){   
             Players.Add(PlayerBarUI);
             playerInput.enabled = false;
             PlayerBarUI.enabled = false;
@@ -36,21 +34,18 @@ public class PlayerBarExtentionScript : NetworkBehaviour
         }else Debug.Log("Action FOUND successfuly");
 
         Vector3 v3 = new Vector3(PlayerBarPosition.x,PlayerBarPosition.y,0);
-        foreach(var player in NetworkManager.ConnectedClientsIds)
-        {
+
+        foreach(var player in NetworkManager.ConnectedClientsIds){
             Debug.Log(player.ToString());
         }
     }
-    void Start()
-    {
+    void Start(){
         if(IsOwner){
             BarsPositioning();
         }
     }
 
-
-    void Update()
-    {
+    void Update(){
         if(!IsOwner) return;
         if (extend == null) return;
         BarsExtension();
@@ -59,34 +54,33 @@ public class PlayerBarExtentionScript : NetworkBehaviour
     void BarsPositioning(){
         Debug.Log(PlayerBarUI.GetComponent<RectTransform>().transform.localPosition);
         Vector3 startVector = PlayerBarUI.GetComponent<RectTransform>().localPosition;
-        for(int i=0; i<Players.Count;i++)
-            {
+        for(int i=0; i<Players.Count;i++){
                 RectTransform rt = Players[i].GetComponent<RectTransform>();
                 Players[i].GetComponent<RectTransform>().transform.localPosition = new Vector3(
                                                         startVector.x,
                                                         startVector.y+rt.rect.height*(1+i),
                                                         0);
-            }
+        }
     }
 
     void BarsExtension(){
-        foreach(Canvas c in Players){
-            if(c == null){
-                Players.Remove(c);
-                BarsPositioning();
-            }
-        }
-        if (extend.IsPressed() && !barsExtended){
+        if (extend.IsPressed()){
             foreach(Canvas c in Players){
-                if(c == null) continue;
-                c.enabled = true;
-                barsExtended = true;
+                if(c == null){
+                    Players.Remove(c);
+                    BarsPositioning();
+                }
+            }
+            if(!barsExtended){
+                foreach(Canvas c in Players){
+                    if(c == null) continue;
+                    c.enabled = true;
+                    barsExtended = true;
+                }
             }
         }
-        else if (!extend.IsPressed() && barsExtended)
-        {
-            foreach(Canvas c in Players)
-            {
+        else if (!extend.IsPressed() && barsExtended){
+            foreach(Canvas c in Players){
                 c.enabled=false;
                 barsExtended=false;
             }
