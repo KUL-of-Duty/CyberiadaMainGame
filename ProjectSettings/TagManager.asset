@@ -4,14 +4,17 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - Enemy
+  - Hazard
   - Item
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
+  - Player
   - 
   - 
   - 
@@ -19,8 +22,7 @@ TagManager:
   - 
   - 
   - 
-  - Button
-  - Ground
+  - 
   - 
   - 
   - 

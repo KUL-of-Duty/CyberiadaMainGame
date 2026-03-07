@@ -11,6 +11,7 @@ public class InGameConnection : NetworkBehaviour
 
     private void Start()
     {
+        Time.timeScale = 0;
     }
 
     public void StartGame()
@@ -36,6 +37,7 @@ public class InGameConnection : NetworkBehaviour
     {
         LevelManager.GetComponent<EndlessTerrainGeneration>().activated = true;
         gameObject.SetActive(false);
+        Time.timeScale = 1.0f;
     }
 
     [ClientRpc]

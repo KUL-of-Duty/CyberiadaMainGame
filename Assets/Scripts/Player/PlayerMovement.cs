@@ -1,5 +1,6 @@
 using Unity.Cinemachine;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
@@ -12,6 +13,10 @@ public class PlayerMovement : NetworkBehaviour
     GameObject _groundCheck;
     [SerializeField]
     ClientMovement _clientMovement;
+    [SerializeField]
+    GameObject playerRIG;
+    [SerializeField]
+    GameObject playerHUD;
 
     [Space]
 
@@ -21,6 +26,8 @@ public class PlayerMovement : NetworkBehaviour
     private float _speed = 3f;
     [SerializeField]
     private float _sprintSpeed = 1.8f;
+    private bool _emptyHandBonus = true;
+    private float _emptyHandSpeed = 1.2f;
 
     [Space]
 
@@ -46,16 +53,21 @@ public class PlayerMovement : NetworkBehaviour
     private float _jumpForce = 15f;
     private float _jumpVelocity = 0f;
     [SerializeField]
-    private float _heightBounds = 20f;
+    private float _heightBounds = 21f;
 
     public Vector3 MoveVector { get; private set; }
     public Vector3 RotateVector { get; private set; }
+
+    [SerializeField] private Animator _animator;
 
     void Awake()
     {
         _clientMovement = GetComponent<ClientMovement>();
         _playerCamera = GetComponentInChildren<CinemachineCamera>();
         _playerCamera.gameObject.SetActive(false);
+
+        if (TryGetComponent<NetworkAnimator>(out var netAnim))
+            _animator = netAnim.Animator;
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -64,7 +76,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
-        if (IsOwner) _playerCamera.gameObject.SetActive(true);
+        if (IsOwner)
+        {
+            _playerCamera.gameObject.SetActive(true);
+            playerHUD.gameObject.SetActive(true);
+            playerRIG.gameObject.SetActive(false);
+        }
     }
 
     void FixedUpdate()
@@ -85,6 +102,12 @@ public class PlayerMovement : NetworkBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
 
+        if (_animator)
+        {
+            print(move.magnitude > 0);
+            _animator.SetBool("isMoving", move.magnitude > 0);
+        }
+            
         _clientMovement.UpdateMovementServerRPC(move * _speed * Time.deltaTime * Sprint());
     }
 
@@ -125,7 +148,15 @@ public class PlayerMovement : NetworkBehaviour
         if (Input.GetKey(KeyCode.LeftShift) && _isGrounded)
         {
             return _sprintSpeed;
+        } else if (_emptyHandBonus)
+        {
+            return _emptyHandSpeed;
         }
         return 1.0f;
+    }
+
+    public void SetEmptyHandBonus(bool boolean)
+    {
+        _emptyHandBonus = boolean;
     }
 }

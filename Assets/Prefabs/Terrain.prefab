@@ -18,7 +18,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 127
   m_IsActive: 1
 --- !u!4 &1142048455401995930
 Transform:
@@ -55,7 +55,7 @@ Terrain:
   m_SplatMapDistance: 1000
   m_HeightmapMinimumLODSimplification: 0
   m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 2
+  m_ShadowCastingMode: 1
   m_DrawHeightmap: 1
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
@@ -133,4 +133,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cEnv: {fileID: 11400000, guid: bdef812725b58484b8be0b55a3d6ca20, type: 2}
-  mushroom: {fileID: 4630215550036261582, guid: 9910ccc517b27384dba2fa7bebeaba04, type: 3}

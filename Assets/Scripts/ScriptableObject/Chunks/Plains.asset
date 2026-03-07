@@ -21,8 +21,8 @@ MonoBehaviour:
   - {fileID: 871550844238538429, guid: 91e9de0e89a80d045a80bf47f955fcfa, type: 3}
   - {fileID: 4967132253923235181, guid: ec51413eeeecff94ab7d6c2473ea57b5, type: 3}
   chunkOtherObjects: []
-  maxMushrooms: 5
-  minMushrooms: 3
+  maxMushrooms: 35
+  minMushrooms: 30
   multipleMushroomsChance: 25
   mushroomsPossible:
   - {fileID: 4630215550036261582, guid: 9910ccc517b27384dba2fa7bebeaba04, type: 3}
