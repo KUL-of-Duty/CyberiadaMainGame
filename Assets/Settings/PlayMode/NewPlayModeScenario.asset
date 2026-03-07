@@ -32,7 +32,7 @@ MonoBehaviour:
     m_BuildProfile: {fileID: 11400000, guid: 4c7904d50e3ca5e4b80b04b56fb82838, type: 2}
     advancedConfiguration:
       m_StreamLogsToMainEditor: 1
-      m_LogsColor: {r: 0.38664398, g: 0.8666667, b: 0.36470592, a: 1}
+      m_LogsColor: {r: 0.3643, g: 0.581, b: 0.8679, a: 1}
       m_Arguments: -screen-fullscreen 0 -screen-width 1024 -screen-height 720
       m_DeviceID: 
       m_DeviceName: 

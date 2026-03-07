@@ -261,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 628551621
+  GlobalObjectIdHash: 511684828
   InScenePlacedSourceGlobalObjectIdHash: 628551621
   DeferredDespawnTick: 0
   Ownership: 1
@@ -290,6 +290,8 @@ MonoBehaviour:
   _playerCamera: {fileID: 4054412868605168049}
   _groundCheck: {fileID: 7389943108109312315}
   _clientMovement: {fileID: 8373762113024799558}
+  playerRIG: {fileID: 0}
+  playerHUD: {fileID: 0}
   _speed: 3
   _sprintSpeed: 1.8
   _mouseSens: 100
@@ -300,6 +302,7 @@ MonoBehaviour:
   _groundRadius: 0.5
   _jumpForce: 3
   _heightBounds: 20
+  _animator: {fileID: 0}
 --- !u!143 &3966168018525811613
 CharacterController:
   m_ObjectHideFlags: 0
@@ -649,7 +652,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_TargetDisplay: 0
 --- !u!114 &7367525401404619212
 MonoBehaviour:
@@ -663,12 +666,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96

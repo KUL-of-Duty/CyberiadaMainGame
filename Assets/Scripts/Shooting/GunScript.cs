@@ -58,7 +58,8 @@ public class GunScript : NetworkBehaviour{
     }
 
     void Attack(){
-        if(!(gunObjectScript.WeaponType==TypeOfWeapon.MELEE))
+
+        if(!(gunObjectScript.weaponType==TypeOfWeapon.MELEE))
             ammo.ConsumeAmmoServerRpc(1);
         RaycastHit hit;
         if(Physics.Raycast(fpsCam.transform.position,fpsCam.transform.forward, out hit, gunObjectScript.range)){
@@ -102,7 +103,7 @@ public class GunScript : NetworkBehaviour{
 
     void TryShoot(){
         if(!IsOwner) return;
-        if (gunObjectScript.WeaponType == TypeOfWeapon.MELEE){
+        if (gunObjectScript.weaponType == TypeOfWeapon.MELEE){
             Attack();
         }
         else if(ammo!=null&&ammo.GetAmmo()>0){
