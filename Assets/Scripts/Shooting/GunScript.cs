@@ -58,18 +58,18 @@ public class GunScript : NetworkBehaviour{
     }
 
     void Attack(){
-
+        lastAttackTime = Time.time;
         if(!(gunObjectScript.weaponType==TypeOfWeapon.MELEE))
             ammo.ConsumeAmmoServerRpc(1);
         RaycastHit hit;
         if(Physics.Raycast(fpsCam.transform.position,fpsCam.transform.forward, out hit, gunObjectScript.range)){
             Debug.DrawRay(fpsCam.transform.position, fpsCam.transform.forward * gunObjectScript.range, Color.white,0.5f, true);
-            if(hit.transform.GetComponent<Target>() == null) return;
-            Target target = hit.transform.GetComponent<Target>();
+            if(hit.collider.GetComponent<Target>() == null) return;
+            Target target = hit.collider.GetComponent<Target>();
             ulong id = target.NetworkObjectId;
             ReportHit(id, gunObjectScript.damage);
         }
-        lastAttackTime = Time.time;
+        Debug.Log(lastAttackTime);
     }
 
     void OnAttackPressed(){ 
@@ -118,6 +118,7 @@ public class GunScript : NetworkBehaviour{
 
     [ServerRpc(RequireOwnership = false)]
     void ReportHitServerRpc(ulong objectId,float damage){
+        Debug.Log("Hit Peported:" + objectId);
         if(!NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(objectId, out NetworkObject obj)) return;
         Target target = obj.GetComponent<Target>();
         if(target!=null)

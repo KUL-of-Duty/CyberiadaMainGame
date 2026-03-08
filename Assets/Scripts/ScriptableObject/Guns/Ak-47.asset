@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewScriptableObjectScript
   damage: 10
   range: 100
-  attackInterval: 0.34
+  attackInterval: 0.4
   weaponType: 1
   ammo: 30
   maxAmmo: 30
