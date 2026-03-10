@@ -2,30 +2,37 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "GunObjectScript", menuName = "Scriptable Objects/GunObjectScript")]
-public class GunObjectScript : ScriptableObject
-{
-    public float damage = 10f; // obraÅ¼enia
-    public float range = 100f; // zasiÄ™g
-    public float attackInterval= 0.34f; // czas miÄ™dzy atakami
-    public FireMode WeaponType;
-    // public bool singleShot= true; // pojedynczy strzaÅ‚
-    // public bool autoFire = false; // ogieÅ„ automatyczny (przytrzymanie)
-    // public bool melee = false; // walka wrÄ™cz
-    // public bool continuousFire= false; // ogieÅ„ ciÄ…gÅ‚y (strumieÅ„)
+public class GunObjectScript : ScriptableObject{
+    public float damage = 10f;
+    public float range = 100f;
+    public float attackInterval= 0.34f;
+    public TypeOfWeapon weaponType;
     public int ammo = 30;
     public int maxAmmo = 30;
     public float reloadTime=2.35f;
     public int burstBullets=3;
     public float burstInterval = 0.125f;
-    public WeaponType weaponType;
-    public Sprite weaponIcon;
+
+    //07.03.2026
+    //Dodaliœmy te zmienne których brakowa³o w tym SO aby dzia³a³o ze skryptami Olka [Konieczne Review z twórc¹!]
     public GameObject weaponModel;
     public int weaponIndex;
-}
+    public Sprite weaponIcon;
+    //07.03.2026
 
-public enum FireMode
-{
-    SINGLE_SHOT, AUTO_FIRE, MELEE, BURST_FIRE
-}
+    public bool isSingleShot(){
+        return (weaponType==TypeOfWeapon.SINGLE_SHOT)? true:false;
+    }
 
-public enum WeaponType { Rifle, Pistol, Melee, Utility }
+    public bool isAutoFire(){
+        return (weaponType==TypeOfWeapon.AUTO_FIRE)? true:false;
+    }
+
+    public bool isMelee(){
+        return (weaponType==TypeOfWeapon.MELEE)? true:false;
+    }
+    
+    public bool isBurstFire(){
+        return (weaponType==TypeOfWeapon.BURST_FIRE)? true:false;
+    }
+}
