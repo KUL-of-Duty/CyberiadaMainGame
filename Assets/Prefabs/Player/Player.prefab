@@ -166,6 +166,8 @@ GameObject:
   - component: {fileID: 8373762113024799558}
   - component: {fileID: 4689989422919408655}
   - component: {fileID: 5720835559570906381}
+  - component: {fileID: 3296958177592059850}
+  - component: {fileID: 9074645100205126440}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -265,10 +267,12 @@ MonoBehaviour:
   _playerCamera: {fileID: 4054412868605168049}
   _groundCheck: {fileID: 7389943108109312315}
   _clientMovement: {fileID: 8373762113024799558}
+  _soundManager: {fileID: 0}
   playerRIG: {fileID: 8308628973495774429}
   playerHUD: {fileID: 1805993160769217658}
   _speed: 3
   _sprintSpeed: 1.8
+  _emptyHandSpeed: 1.2
   _mouseSens: 100
   _gravityForce: -9.8
   _groundLayer:
@@ -276,7 +280,6 @@ MonoBehaviour:
     m_Bits: 16384
   _groundRadius: 0.5
   _jumpForce: 3
-  _heightBounds: 20
 --- !u!143 &3966168018525811613
 CharacterController:
   m_ObjectHideFlags: 0
@@ -363,6 +366,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _characterController: {fileID: 3966168018525811613}
   _playerMovement: {fileID: 8774123567545295718}
+  _soundManager: {fileID: 0}
 --- !u!114 &4689989422919408655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -407,6 +411,121 @@ MonoBehaviour:
   - {fileID: 904326211091871679}
   - {fileID: 7323393847788507584}
   ItemSpawnerPrefab: {fileID: 2979767922984025350, guid: 108425d64cb38c445a412a60c4bc4302, type: 3}
+--- !u!82 &3296958177592059850
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551338485777565899}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 20
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &9074645100205126440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551338485777565899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9295cd6097bf385479e17f9e726bb371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  _walkClip: {fileID: 8300000, guid: 4bd524204d186bb42aec99a5ae7e90e9, type: 3}
+  _sprintClip: {fileID: 8300000, guid: 0b78a32a0bca78c408cf179bbba5ffc5, type: 3}
+  _jumpClip: {fileID: 8300000, guid: d0ed17530d67b2d4991d73591044e3c0, type: 3}
+  _baseStepInterval: 0.5
+  _sprintThreshold: 4
 --- !u!1 &627012306870065799
 GameObject:
   m_ObjectHideFlags: 0
