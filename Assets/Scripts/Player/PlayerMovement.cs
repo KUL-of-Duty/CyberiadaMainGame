@@ -69,7 +69,7 @@ public class PlayerMovement : NetworkBehaviour
         if (TryGetComponent<NetworkAnimator>(out var netAnim))
             _animator = netAnim.Animator;
 
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public override void OnNetworkSpawn()
