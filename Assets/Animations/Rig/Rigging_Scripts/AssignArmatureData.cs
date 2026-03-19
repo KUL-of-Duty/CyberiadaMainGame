@@ -12,8 +12,8 @@ public class AssignArmatureData : MonoBehaviour
 
     public string rootPrefix = "Root/Stomach";
     public void ExecuteAction()
-    {
-        boneRenderer.transforms = armature.GetComponentsInChildren<Transform>();
+    {/*
+        boneRenderer. = armature.GetComponentsInChildren<Transform>();
 
         leg_l.data.root = armature.Find($"{rootPrefix}/Hip.L");
         leg_l.data.mid = armature.Find($"{rootPrefix}/Hip.L/Leg.L");
@@ -31,6 +31,6 @@ public class AssignArmatureData : MonoBehaviour
         arm_r.data.mid = armature.Find($"{rootPrefix}/Chest/Neck/Arm.R/Forearm.R");
         arm_r.data.tip = armature.Find($"{rootPrefix}/Chest/Neck/Arm.R/Forearm.R/Hand.R");
 
-
+        */
     }
 }
