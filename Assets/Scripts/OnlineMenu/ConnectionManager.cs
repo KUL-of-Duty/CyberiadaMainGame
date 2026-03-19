@@ -31,6 +31,7 @@ public class ConnectionManager : NetworkBehaviour
 
     public void HostLobby()
     {
+        netManager.GetComponent<UnityTransport>().SetConnectionData(ifipAddress.text, Convert.ToUInt16(ifPort.text));
         netManager.StartHost();
         ShowLobby();
     }
