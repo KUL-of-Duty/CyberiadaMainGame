@@ -36,6 +36,13 @@ public class ConnectionManager : NetworkBehaviour
         ShowLobby();
     }
 
+    public void HostLocalLobby()
+    {
+        netManager.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1", 7777);
+        netManager.StartHost();
+        ShowLobby();
+    }
+
     public void ShowLobby()
     {
         netManager.GetComponent<NetworkManager>().SceneManager.LoadScene("MainLevel", LoadSceneMode.Single);

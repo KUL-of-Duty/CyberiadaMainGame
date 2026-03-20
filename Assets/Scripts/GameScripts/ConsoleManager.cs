@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ConsoleManager : MonoBehaviour
@@ -48,10 +49,10 @@ public class ConsoleManager : MonoBehaviour
         ConsoleHUD.SetActive(true);
     }   
 
-    private void HideConsole()
+    public void HideConsole()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.visible = SceneManager.GetActiveScene().name == "MainLevel" ? false : true;
         ConsoleHUD.SetActive(false);
     }
 

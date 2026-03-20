@@ -7,11 +7,36 @@ public class InGameConnection : NetworkBehaviour
     [SerializeField] GameObject LevelManager;
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject playerCountText;
-    //int playerCount = 1;
 
     private void Start()
     {
         Time.timeScale = 0;
+    }
+
+    private void OnEnable()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientChanged;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (NetworkManager.Singleton == null) return;
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientChanged;
+        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientChanged;
+    }
+
+    private void OnClientChanged(ulong clientId)
+    {
+        UpdatePlayerCount();
+    }
+
+    public void UpdatePlayerCount()
+    {
+        int playerCount = NetworkManager.Singleton.ConnectedClientsList.Count;
+
+        playerCountText.GetComponent<TMP_Text>().text = "Players: " + playerCount;
     }
 
     public void StartGame()

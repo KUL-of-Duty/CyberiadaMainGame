@@ -29,6 +29,11 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene("ConnectionMenu");
     }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
     public void OpenSettings()
     {
         if (optionsPanel == null)
