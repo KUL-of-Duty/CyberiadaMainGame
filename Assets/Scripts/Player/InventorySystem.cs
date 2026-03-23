@@ -62,6 +62,10 @@ public class InventorySystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E)) TryPickUp();
         if (Input.GetKeyDown(KeyCode.G)) DropSlot(currentSlotIndex);
+
+        // --- TESTOWE KLAWISZE DO GRZYBKÓW ---
+        if(Input.GetKeyDown(KeyCode.T)) GetComponentInChildren<MushroomAtlas>().showMushroomList();
+        if(Input.GetKeyDown(KeyCode.Y)) GetComponentInChildren<MushroomAtlas>().consumeRandomMushroom();
     }
 
     void TryPickUp()

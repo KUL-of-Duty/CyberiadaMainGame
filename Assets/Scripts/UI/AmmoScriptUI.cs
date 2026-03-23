@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine.UI;
 
-public class AmmoScript : NetworkBehaviour
+public class AmmoScriptUI : NetworkBehaviour
 {
     public Text ammoAmount;
     public PlayerAmmo playerAmmo;

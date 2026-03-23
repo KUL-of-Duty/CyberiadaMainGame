@@ -53,7 +53,13 @@ public class PlayerBarExtentionScript : NetworkBehaviour
     {
         if(!IsOwner) return;
         if (extend == null) return;
-        BarsExtension();
+        try{
+            BarsExtension();
+        }
+        catch(System.Exception e){
+            Debug.Log("Error in BarsExtension: "+e.Message);
+        }
+        //BarsExtension();
     }
 
     void BarsPositioning(){
@@ -61,6 +67,7 @@ public class PlayerBarExtentionScript : NetworkBehaviour
         Vector3 startVector = PlayerBarUI.GetComponent<RectTransform>().localPosition;
         for(int i=0; i<Players.Count;i++)
             {
+                if(Players[i] == null) continue;
                 RectTransform rt = Players[i].GetComponent<RectTransform>();
                 Players[i].GetComponent<RectTransform>().transform.localPosition = new Vector3(
                                                         startVector.x,
@@ -70,6 +77,7 @@ public class PlayerBarExtentionScript : NetworkBehaviour
     }
 
     void BarsExtension(){
+        if(Players.Count == 0) return;
         foreach(Canvas c in Players){
             if(c == null){
                 Players.Remove(c);

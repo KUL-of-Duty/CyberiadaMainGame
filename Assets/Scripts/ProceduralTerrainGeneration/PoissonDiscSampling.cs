@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PoissonDiscSampling : MonoBehaviour
+public class PoissonDiscSampling : NetworkBehaviour
 {
     [Header("Poisson Base Values")]
     [SerializeField] float radius = 3;

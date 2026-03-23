@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 public class PlayerAmmo : NetworkBehaviour {
     public NetworkVariable<int> Ammo = new NetworkVariable<int>(1,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Server);
-    public AmmoScript ammoScript;
+    public AmmoScriptUI ammoScript;
     
     public override void OnNetworkSpawn(){
         Ammo.OnValueChanged += OnAmmoChanged;

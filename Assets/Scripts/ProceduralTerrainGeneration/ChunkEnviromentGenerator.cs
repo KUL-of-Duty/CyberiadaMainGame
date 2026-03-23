@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using NUnit.Framework;
+using Unity.Netcode;
 using UnityEngine;
 
-public class ChunkEnviromentGenerator : MonoBehaviour
+public class ChunkEnviromentGenerator : NetworkBehaviour
 {
     public ChunkEnviroment cEnv;
     public ChunkType type;
@@ -12,8 +14,11 @@ public class ChunkEnviromentGenerator : MonoBehaviour
         Hut
     }
     List<Vector2> spawnPoints = new List<Vector2>();
+    //public override void OnNetworkSpawn()
     void Start()
     {
+        if(!NetworkManager.Singleton.IsServer) return;
+        Debug.Log("Spawn points count: ");
         spawnPoints = GetComponentInParent<PoissonDiscSampling>().points;
         int mushroomsToSpawn = cEnv.minMushrooms;
 
@@ -25,7 +30,8 @@ public class ChunkEnviromentGenerator : MonoBehaviour
         for (int i = 0; i < mushroomsToSpawn; i++)
         {
             int mushroomType = Random.Range(0, cEnv.mushroomsPossible.Length);
-            Instantiate(cEnv.mushroomsPossible[mushroomType], transform.position + Vector3.right * Random.Range(0, 256) + Vector3.forward * Random.Range(0, 256) + Vector3.up * 20, Quaternion.identity, transform);
+            var obj = Instantiate(cEnv.mushroomsPossible[mushroomType], transform.position + Vector3.right * Random.Range(0, 256) + Vector3.forward * Random.Range(0, 256) + Vector3.up * 20, Quaternion.identity, transform);
+            obj.GetComponent<NetworkObject>().Spawn();   
         }
 
         switch (type)
@@ -33,7 +39,8 @@ public class ChunkEnviromentGenerator : MonoBehaviour
             case ChunkType.Plains:
                 foreach (var point in spawnPoints)
                 {
-                    Instantiate(cEnv.chunkTrees[Random.Range(0, cEnv.chunkTrees.Length)], transform.position + new Vector3(point.x, 20, point.y), Quaternion.identity, transform);
+                    var obj = Instantiate(cEnv.chunkTrees[Random.Range(0, cEnv.chunkTrees.Length)], transform.position + new Vector3(point.x, 20, point.y), Quaternion.identity, transform);
+                    obj.GetComponent<NetworkObject>().Spawn();
                 }
                 break;
             case ChunkType.Church:
