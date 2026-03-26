@@ -1,9 +1,7 @@
 
 using UnityEngine;
 using Unity.Netcode;
-using Unity.Cinemachine;
-using System.Collections.Generic;
-using NUnit.Framework;
+
 public class MushroomInteractionSystem : NetworkBehaviour
 {
     public MushroomType mushroomType;
